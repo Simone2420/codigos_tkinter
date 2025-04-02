@@ -75,40 +75,74 @@ class InterfazInventario:
             self.tabla_productos.delete(item)
         self.actualizar_indices()
     def guardar_producto(self):
-    # Mostrar una ventana emergente con dos opciones
-        opcion = messagebox.askquestion(
+    # Usar askyesnocancel que devuelve True (Sí), False (No) o None (Cancelar)
+        opcion = messagebox.askyesnocancel(
             "Guardar producto",
             "¿Cómo desea guardar los productos?\n\n"
             "Seleccione 'Sí' para guardar dinámicamente (agregar a los datos existentes).\n"
-            "Seleccione 'No' para sobrescribir los datos existentes."
+            "Seleccione 'No' para sobrescribir los datos existentes.\n"
+            "Seleccione 'Cancelar' para no guardar."
         )
+    
+        # Si el usuario cierra la ventana o presiona Cancelar
+        if opcion is None:
+            return  # No hacer nada
+            
+        if opcion is True:  # Guardado dinámico (Sí)
+            self.manejo_productos = ManejoProductos(self.productos_almacenados)
+            mensaje = self.manejo_productos.registrar_datos_sin_sobrescritura()
+            if mensaje == "Los productos se han guardado dinámicamente.":
+                messagebox.showinfo("Guardado exitoso", mensaje)
+            else:
+                messagebox.showerror("Error al guardar", mensaje)
+            self.productos_almacenados.clear()
+            self.actualizar_indices()
+            
+        elif opcion is False:  # Sobrescritura (No)
+            self.manejo_productos = ManejoProductos(self.productos_almacenados)
+            mensaje = self.manejo_productos.registrar_datos_con_sobrescritura()
+            if mensaje == "Los productos se han guardado con sobreescritura.":
+                messagebox.showinfo("Guardado exitoso", mensaje)
+            else:
+                messagebox.showerror("Error al guardar", mensaje)
+            self.productos_almacenados.clear()
+            self.actualizar_indices()
+    def cargar_producto(self):
+        # Crear una instancia de ManejoProductos sin productos
+        gestor_productos = ManejoProductos()
 
-        if opcion == "yes":  # Guardado dinámico
-                self.manejo_productos = ManejoProductos(self.productos_almacenados)
-                mensaje = self.manejo_productos.registrar_datos_sin_sobrescritura()
-                if mensaje == "Los productos se han guardado dinámicamente.":
-                    messagebox.showinfo("Guardado exitoso", mensaje)
-                else:
-                    messagebox.showerror("Error al guardar", mensaje)
+        # Cargar productos desde la base de datos
+        productos_bd, mensaje = gestor_productos.cargar_productos_desde_bd()
 
-        elif opcion == "no":  
-            try:
-                conexion = ConectorBasedeDatos()
-                conexion.cursor.execute("DELETE FROM productos")
-                conexion.conexion.commit()
-                for producto in self.productos_almacenados:
-                    _, nombre, precio, cantidad, total = producto
-                    conexion.registrar_datos(nombre, precio, cantidad, total)
-                messagebox.showinfo("Guardado exitoso", "Los productos se han guardado con sobreescritura.")
-            except Exception as e:
-                messagebox.showerror("Error al guardar", f"Ocurrió un error: {e}")
-            finally:
-                conexion.cerrar_conexion()
-    def cargar_producto(self): pass
+        if not productos_bd:
+            messagebox.showinfo("Información", mensaje if "error" in mensaje.lower() else "No hay productos para cargar.")
+            return
+
+        # Limpiar tabla y lista actual
+        for item in self.tabla_productos.get_children():
+            self.tabla_productos.delete(item)
+
+        self.productos_almacenados.clear()
+
+        # Agregar productos cargados a la lista y tabla
+        for producto in productos_bd:
+            id_bd, nombre, precio, cantidad, total = producto
+            # Agregar a la lista con índice basado en la posición
+            indice = len(self.productos_almacenados) + 1
+            self.productos_almacenados.append((indice, nombre, precio, cantidad, total))
+            # Agregar a la tabla
+            self.tabla_productos.insert("", "end", values=(indice, nombre, f"${precio:.2f}", cantidad, f"${total:.2f}"))
+
+        if productos_bd:
+            messagebox.showinfo("Carga exitosa", f"Se han cargado {len(productos_bd)} productos.")
+            # Activar botones relevantes
+            self.boton_eliminar.config(state="normal")
+            self.boton_editar.config(state="normal")
+            self.boton_guardar.config(state="normal")
     def editar_producto(self):
         seleccionado = self.tabla_productos.selection()
         item = self.tabla_productos.item(seleccionado[0])
-        indice,nombre,precio,cantidad,_ = item["values"]
+        _,nombre,precio,cantidad,_ = item["values"]
         self.nombre_producto.delete(0, tk.END)
         self.nombre_producto.insert(0, nombre)
         self.precio_producto.delete(0, tk.END)
