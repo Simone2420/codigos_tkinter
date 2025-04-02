@@ -106,9 +106,10 @@ class EmpleadoBiblioteca(Persona):
     salario_constante = 0
     horario = ""
     funciones = ""
-    def __init__(self, nombre, identificacion, salario, horario, funciones):
+    def __init__(self, nombre, id_profesional, identificacion, salario, horario, funciones):
         super().__init__(nombre, identificacion)
         self.__salario = salario
+        self.__id_profesional = id_profesional
         self.__salario_constante = self.__salario
         self.__horario = horario
         self.__funciones = funciones
@@ -121,14 +122,15 @@ class EmpleadoBiblioteca(Persona):
         self.__salario = nuevo_salario
     def obtener_horario(self):
         return self.__horario
-
+    def obtener_id_profesional(self):
+        return self.__id_profesional
     def obtener_funciones(self):
         return self.__funciones
 
 class Docente(UsuarioBase, EmpleadoBiblioteca):
     id_profesional = "P#####"
     def __init__(self, nombre, identificacion, salario, horario, funciones, id_profesional,limite_prestamos=3):
-        EmpleadoBiblioteca.__init__(self,nombre, identificacion, salario, horario, funciones)
+        EmpleadoBiblioteca.__init__(self,nombre, id_profesional,identificacion, salario, horario, funciones)
         UsuarioBase.__init__(self,nombre, identificacion, "docente")
         self.__id_profesional = id_profesional
         self._limite_prestamos = limite_prestamos

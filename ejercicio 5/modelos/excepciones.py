@@ -21,9 +21,6 @@ class DatosInvalidos(Exception):
     def __init__(self, mensaje="Los datos ingresados son inválidos"):
         self.mensaje = mensaje
         super().__init__(self.mensaje)
-class OpcionInvalida(Exception): 
-    def __init__(self,mensaje="Opcion invalida"):
-        self.mensaje = mensaje
 class IdentificacionRepetida(Exception):
     def __init__(self,mensaje="La identificacion ingresada ya la tiene registrada un usuario del sistema)"):
         self.mensaje = mensaje
@@ -36,3 +33,13 @@ class MultaNoPagada(Exception):
 class LibroYaDevuelto(Exception):
     def __init__(self,mensaje="El usuario ya devolvio el libro"):
         self.mensaje = mensaje
+######## excepciones para gui #######
+class NombreVacio(Exception):
+    def __init__(self,mensaje):
+        self.mensaje = mensaje
+class OpcionInvalida(Exception):
+    def __init__(self, mensaje):
+        super().__init__(mensaje)
+class Id_MatriculaVacio(Exception):
+    def __init__(self,mensaje):
+        super().__init__(mensaje)

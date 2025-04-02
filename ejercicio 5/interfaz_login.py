@@ -1,5 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
+from biblioteca_facade import *
+from interfaz_biblioteca_facade import *
+from modelos import excepciones,EmpleadoBiblioteca
 class LoginBiblioteca:
     def __init__(self, ventana):
         self.ventana = ventana
@@ -100,5 +103,38 @@ class LoginBiblioteca:
             command=self.realizar_login)
         self.boton_login.grid(row=4, column=1, pady=20)
         
-    def realizar_login(self): 
-        pass
+    def realizar_login(self):
+        try:
+            tipo_usuario = self.tipo_usuario.get()
+            if tipo_usuario == "" or tipo_usuario not in ["empleado biblioteca","docente","estudiante"]:
+                raise OpcionInvalida("Escoga un tipo de usuario adecuado")
+            nombre = self.nombre.get().strip()
+            if nombre == "":
+                raise NombreVacio("El nombre no debe ser vacio")
+            id_matricula = self.id_matricula.get().strip()
+            if id_matricula == "":
+                raise Id_MatriculaVacio("El numero de id profesional o numero de la matricula está vacio")
+            identificacion = int(self.identificacion.get())
+            if not identificacion:
+                raise ValueError
+            if tipo_usuario == "empleado biblioteca":
+                logeador =BibliotecaFacade()
+                bibliotecario = logeador.logear_usuario(tipo_usuario,nombre,id_matricula,identificacion)
+                if bibliotecario == "Error en el id_profesional":
+                    messagebox.showerror("Error en el id_profesional","El id profesional debe seguir este formato: P#####")
+                elif bibliotecario == "Bibliotecario no encontrado" or bibliotecario == None:
+                    messagebox.showwarning("Empleado no encontrado","Ingrese los datos del bibliotecario")
+                else:
+                    messagebox.showinfo("Empleado de la biblioteca encontrado exitosamente","Empleado de la biblioteca encontrado exitosamente")
+                    
+            elif tipo_usuario == "docente" or tipo_usuario == "estudiante": pass
+        except OpcionInvalida as e:
+            messagebox.showerror("Error en tipo de usuario",e)
+        except NombreVacio as e:
+            messagebox.showerror("Error en ingreso del nombre del usuario",e)
+        except Id_MatriculaVacio as e:
+            messagebox.showerror("Error en ingreso del id o matriculo del usuario",e)
+        except ValueError:
+            messagebox.showerror("Identificación invalida","El numero de la identificación debe ser numerico")
+        except Exception as e:
+            messagebox.showerror("Error inesperado",e)
