@@ -126,7 +126,22 @@ class LoginBiblioteca:
                     messagebox.showwarning("Empleado no encontrado","Ingrese los datos del bibliotecario")
                 else:
                     messagebox.showinfo("Empleado de la biblioteca encontrado exitosamente","Empleado de la biblioteca encontrado exitosamente")
-                    
+                    self.ventana.withdraw()
+                    nueva_ventana = tk.Toplevel()
+                    InterfazBibliotecario(nueva_ventana, bibliotecario)
+            elif tipo_usuario in ["docente", "estudiante"]:
+                logeador = BibliotecaFacade()
+                usuario = logeador.logear_usuario(tipo_usuario,nombre,id_matricula,identificacion)
+                if usuario == "Error en el id_profesional" or "Error en el numero de matricula":
+                    messagebox.showerror("Error en el id_profesional","El id profesional debe seguir este formato: P#####")
+                elif usuario == "usuario no encontrado" or usuario == None:
+                    messagebox.showwarning("Empleado no encontrado","Ingrese los datos del bibliotecario")
+                else:
+                    messagebox.showinfo("Empleado de la biblioteca encontrado exitosamente","Empleado de la biblioteca encontrado exitosamente")
+                    self.ventana.withdraw()
+                    nueva_ventana = tk.Toplevel()
+                InterfazUsuario(nueva_ventana, nombre, tipo_usuario)
+                nueva_ventana.protocol("WM_DELETE_WINDOW", lambda: self.cerrar_aplicacion(nueva_ventana))
             elif tipo_usuario == "docente" or tipo_usuario == "estudiante": pass
         except OpcionInvalida as e:
             messagebox.showerror("Error en tipo de usuario",e)
@@ -138,3 +153,6 @@ class LoginBiblioteca:
             messagebox.showerror("Identificación invalida","El numero de la identificación debe ser numerico")
         except Exception as e:
             messagebox.showerror("Error inesperado",e)
+    def cerrar_aplicacion(self, ventana_secundaria):
+        ventana_secundaria.destroy()
+        self.ventana.destroy()

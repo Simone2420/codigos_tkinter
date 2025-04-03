@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from .persona import Persona
+from persona import Persona
 
 class UsuarioBase(Persona, ABC):
     tipo = ""
@@ -55,12 +55,12 @@ class UsuarioBase(Persona, ABC):
 class Estudiante(UsuarioBase):
     numero_matricula = "M#####"
     horas_sociales_asignadas = 0
-    def __init__(self, nombre, identificacion, numero_matricula, limite_prestamos=2):
+    def __init__(self, nombre, identificacion, numero_matricula, limite_prestamos=2,id = 0):
         super().__init__(nombre, identificacion, "estudiante")
         self.__numero_matricula = numero_matricula
         self._horas_sociales_asignadas = 0
         self._limite_prestamos = limite_prestamos
-
+        self.id = id
     def obtener_numero_matricula(self):
         return self.__numero_matricula
     def obtener_limite_prestamos(self):
@@ -106,14 +106,14 @@ class EmpleadoBiblioteca(Persona):
     salario_constante = 0
     horario = ""
     funciones = ""
-    def __init__(self, nombre, id_profesional, identificacion, salario, horario, funciones):
+    def __init__(self, nombre, id_profesional, identificacion, salario, horario, funciones,id=0):
         super().__init__(nombre, identificacion)
         self.__salario = salario
         self.__id_profesional = id_profesional
         self.__salario_constante = self.__salario
         self.__horario = horario
         self.__funciones = funciones
-
+        self.id = id
     def obtener_salario(self):
         return self.__salario
     def obtener_salario_constante(self):
@@ -129,12 +129,12 @@ class EmpleadoBiblioteca(Persona):
 
 class Docente(UsuarioBase, EmpleadoBiblioteca):
     id_profesional = "P#####"
-    def __init__(self, nombre, identificacion, salario, horario, funciones, id_profesional,limite_prestamos=3):
+    def __init__(self, nombre, identificacion, salario, horario, funciones, id_profesional,limite_prestamos=3,id=0):
         EmpleadoBiblioteca.__init__(self,nombre, id_profesional,identificacion, salario, horario, funciones)
         UsuarioBase.__init__(self,nombre, identificacion, "docente")
         self.__id_profesional = id_profesional
         self._limite_prestamos = limite_prestamos
-
+        self.id = id
     def obtener_id_profesional(self):
         return self.__id_profesional
     def obtener_limite_prestamos(self):

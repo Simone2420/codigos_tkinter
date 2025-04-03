@@ -14,7 +14,7 @@ class Prestamo:
     valor_multa = 0
     valor_a_pagar_multa = 0
     tiene_multa = False
-    def __init__(self, usuario, libro,valor_multa=1): #sobrecarga
+    def __init__(self, usuario, libro,valor_multa=1,id=0):
         self._usuario = usuario
         self._libro = libro
         self._fecha_prestamo = datetime.now()
@@ -24,6 +24,7 @@ class Prestamo:
         self._valor_multa = valor_multa
         self._valor_a_pagar_multa = 0
         self._tiene_multa = False
+        self.id = id
     def __str__(self):
         return f"Prestamo del libro {self._libro} que se entrega {self._fecha_devolucion_esperada.strftime('%Y-%m-%d')}"
     def __repr__(self):

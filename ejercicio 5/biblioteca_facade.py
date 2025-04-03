@@ -3,29 +3,42 @@ from controladores import *
 class BibliotecaFacade:
     def logear_usuario(self,tipo_usuario,nombre_usuario,id_matricula_usuario,identificacion_usuario):
         empleado = EmpleadoBiblioteca("Blass","P23456",1070300400,100000,"Mañana","Gestionar")
-        validar_id_profesional = self.verificar_id_matricula_usuario(id_matricula_usuario)
+        validar_id_profesional = self.verificar_id_matricula_usuario(id_matricula_usuario,tipo_usuario)
         if tipo_usuario == "empleado biblioteca" and validar_id_profesional == True:
             validador = all(
                 [nombre_usuario == empleado.obtener_nombre(),
                 id_matricula_usuario == empleado.obtener_id_profesional(),
                 identificacion_usuario == empleado.obtener_identificacion()]
                 )
-        if validar_id_profesional != True:
-            return "Error en el id_profesional"
-        else:
-            if validador == True:
-                return empleado
+            if validar_id_profesional != True:
+                return "Error en el id_profesional"
             else:
-                return "Bibliotecario no encontrado"
-    def verificar_id_matricula_usuario(self,id_matricula_usuario):
+                if validador == True:
+                    return empleado
+                else:
+                    return "Bibliotecario no encontrado"
+        elif tipo_usuario == "docente": pass
+        elif tipo_usuario == "estudiante": pass
+        else:
+            return "Tipo de usuario invalido"
+    def verificar_id_matricula_usuario(self,id_matricula_usuario,tipo_usuario):
         try:
-            if len(id_matricula_usuario) != 6:  # Verificar longitud
-                raise DatosInvalidos("El ID profesional debe tener exactamente 6 caracteres.")
-            if id_matricula_usuario[0].upper() != 'P':  # Verificar prefijo
-                raise DatosInvalidos("El ID profesional debe comenzar con la letra 'P'.")
-            if not id_matricula_usuario[1:].isdigit():  # Verificar dígitos
-                raise DatosInvalidos("Los últimos 5 caracteres deben ser dígitos numéricos.")
-            return True
+            if tipo_usuario == "empleado biblioteca" or tipo_usuario == "docente":
+                if len(id_matricula_usuario) != 6:  # Verificar longitud
+                    raise DatosInvalidos("El ID profesional debe tener exactamente 6 caracteres.")
+                if id_matricula_usuario[0].upper() != 'P':  # Verificar prefijo
+                    raise DatosInvalidos("El ID profesional debe comenzar con la letra 'P'.")
+                if not id_matricula_usuario[1:].isdigit():  # Verificar dígitos
+                    raise DatosInvalidos("Los últimos 5 caracteres deben ser dígitos numéricos.")
+                return True
+            elif tipo_usuario == "estudiante":
+                if len(id_matricula_usuario) != 6:  # Verificar longitud
+                    raise DatosInvalidos("El ID profesional debe tener exactamente 6 caracteres.")
+                if id_matricula_usuario[0].upper() != 'M':  # Verificar prefijo
+                    raise DatosInvalidos("El el Número de matrícula debe comenzar con la letra 'M'.")
+                if not id_matricula_usuario[1:].isdigit():  # Verificar dígitos
+                    raise DatosInvalidos("Los últimos 5 caracteres deben ser dígitos numéricos.")
+                return True
         except DatosInvalidos as e:
             return e
     def registrar_usuario(self): pass

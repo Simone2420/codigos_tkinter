@@ -1,5 +1,6 @@
-from .usuarios import Estudiante,Docente
-from .libro import Libro
+from usuarios import Estudiante,Docente
+from libro import Libro
+from conector_base_datos import *
 import random
 nombres_docentes = ["Carlos Inti","Blass Muñoz","Omar Bravo","Juan Hediberto","Brian Aldana"]
 nombres_estudiantes = ["Diego Ortiz","Hediberto de las Nieves", "Alberto Fonseca","Carlitos Nuñez","Andres Aya"]
@@ -92,3 +93,34 @@ class BaseDatosLibros:
         self._libros.append(libro)
     def obtener_libros(self):
         return self._libros
+if __name__ == "__main__":
+    estudiantes = BaseDatosEstudiantes().obtener_estudiantes()
+    docentes = BaseDatosDocentes().obtener_docentes()
+    libros = BaseDatosLibros().obtener_libros()
+    conexion = ConectorBasedeDatos()
+    for estudiante in estudiantes:
+        conexion.registrar_datos_estudiante(
+            estudiante.obtener_nombre(),
+            estudiante.obtener_identificacion(),
+            estudiante.obtener_numero_matricula(),
+            estudiante.obtener_horas_sociales_asignadas(),
+            estudiante.obtener_limite_prestamos())
+    for libro in libros:
+        conexion.registrar_datos_libro(
+            libro.obtener_titulo(),
+            libro.obtener_autor(),
+            libro.obtener_ano_publicacion(),
+            libro.obtener_categoria(),
+            libro.obtener_esta_disponible(),
+            libro.obtener_numero_veces_solicitado()
+        )
+    for docente in docentes:
+        conexion.registrar_datos_docente(
+            docente.obtener_nombre(),
+            docente.obtener_identificacion(),
+            docente.obtener_id_profesional(),
+            docente.obtener_salario(),
+            docente.obtener_horario(),
+            docente.obtener_funciones(),
+            docente.obtener_limite_prestamos()
+        )
