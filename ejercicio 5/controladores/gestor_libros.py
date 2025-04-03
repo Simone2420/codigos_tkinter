@@ -1,22 +1,22 @@
 class GestorLibros:
     libros = []
     libros_disponibles = []
-    def __init__(self,libros):
-        self._libros = libros
+    def __init__(self,base_datos_proxy):
+        self.base_datos_proxy = base_datos_proxy
+        self._libros = self.base_datos_proxy.obtener_libros()
         self._libros_disponibles = self._libros.copy()
     def obtener_libros(self):
         return self._libros
     def obtener_libros_disponibles(self):
         return self._libros_disponibles
-    def agregar_libro(self,libro):
-        self._libros_disponibles.append(libro)
+    def actualizar_datos_libro(self,libro):
+        self.base_datos_proxy.actualizar_datos_libro(libro)
     def registrar_nuevo_libro(self,nuevo_libro):
         self._libros.append(nuevo_libro)
         self._libros_disponibles.append(nuevo_libro)
+        self.base_datos_proxy.registrar_nuevo_libro(nuevo_libro)
     def quitar_libro(self,indice_libro):
         return self._libros_disponibles.pop(indice_libro)
-    def listar_libros(self):
-        return self._libros
     def mostrar_todos_los_libros(self):
         return self._libros
     def mostrar_libros_disponibles(self):

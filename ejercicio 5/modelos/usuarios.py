@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from persona import Persona
+from .persona import Persona
 
 class UsuarioBase(Persona, ABC):
     tipo = ""
@@ -60,7 +60,9 @@ class Estudiante(UsuarioBase):
         self.__numero_matricula = numero_matricula
         self._horas_sociales_asignadas = 0
         self._limite_prestamos = limite_prestamos
-        self.id = id
+        self._id = id
+    def obtener_id(self):
+        return self._id
     def obtener_numero_matricula(self):
         return self.__numero_matricula
     def obtener_limite_prestamos(self):
@@ -134,7 +136,9 @@ class Docente(UsuarioBase, EmpleadoBiblioteca):
         UsuarioBase.__init__(self,nombre, identificacion, "docente")
         self.__id_profesional = id_profesional
         self._limite_prestamos = limite_prestamos
-        self.id = id
+        self._id = id
+    def obtener_id(self):
+        return self._id
     def obtener_id_profesional(self):
         return self.__id_profesional
     def obtener_limite_prestamos(self):

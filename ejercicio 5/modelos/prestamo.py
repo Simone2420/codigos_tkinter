@@ -24,7 +24,9 @@ class Prestamo:
         self._valor_multa = valor_multa
         self._valor_a_pagar_multa = 0
         self._tiene_multa = False
-        self.id = id
+        self._id = id
+    def obtener_id(self):
+        return self._id
     def __str__(self):
         return f"Prestamo del libro {self._libro} que se entrega {self._fecha_devolucion_esperada.strftime('%Y-%m-%d')}"
     def __repr__(self):
@@ -48,6 +50,18 @@ class Prestamo:
             self._tiene_multa = nuevo_estado
         else:
             print("Solo se admite True o False")
+    def establecer_valor_a_pagar_multa(self,nuevo_valor):
+        self._valor_a_pagar_multa = nuevo_valor
+    def establecer_valor_multa(self,nuevo_valor):
+        self._valor_multa = nuevo_valor
+    def establecer_fecha_prestamo(self, nueva_fecha):
+        self._fecha_prestamo = nueva_fecha
+    def establecer_fecha_devolucion_esperada(self, nueva_fecha):
+        self._fecha_devolucion_esperada = nueva_fecha
+    def establecer_fecha_devolucion(self, nueva_fecha):
+        self._fecha_devolucion = nueva_fecha
+    def establecer_fecha_reagsignacion(self, nueva_fecha):
+        self._fecha_de_reasignacion = nueva_fecha
     def obtener_valor_a_pagar_multa(self):
         return self._valor_a_pagar_multa
     def asignar_fecha_devolucion(self):

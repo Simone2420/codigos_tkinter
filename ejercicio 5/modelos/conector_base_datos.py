@@ -141,19 +141,19 @@ class ConectorBasedeDatos:
         except Exception as e:
             print(f"Error al obtener datos: {e}")
 
-    def actualizar_datos_docente(self, id_docente, nombre_docente, identificacion, id_profesional, salario, horario, funciones, limite_prestamos):
+    def actualizar_datos_docente(self, id_docente, nombre_docente, identificacion, id_profesional, salario, horario, funciones, limite_prestamos,tiene_multa):
         try:
             self.cursor.execute('''
-                UPDATE docentes SET nombre_docente=?, identificacion=?, id_profesional=?, salario=?, horario=?, funciones=?, limite_prestamos=? WHERE id=?
-            ''', (nombre_docente, identificacion, id_profesional, salario, horario, funciones, limite_prestamos, id_docente))
+                UPDATE docentes SET nombre_docente=?, identificacion=?, id_profesional=?, salario=?, horario=?, funciones=?, limite_prestamos=?,tiene_multa=? WHERE id=?
+            ''', (nombre_docente, identificacion, id_profesional, salario, horario, funciones, limite_prestamos, tiene_multa,id_docente))
             self.conexion.commit()
         except Exception as e:
             print(f"Error al actualizar datos: {e}")
 
-    def actualizar_datos_estudiante(self, id_estudiante, nombre, identificacion, numero_matricula, horas_sociales_asignadas, limite_prestamos):
+    def actualizar_datos_estudiante(self, id_estudiante, nombre, identificacion, numero_matricula, horas_sociales_asignadas, limite_prestamos,tiene_multa):
         try:
             self.cursor.execute('''
-                UPDATE estudiantes SET nombre=?, identificacion=?, numero_matricula=?, horas_sociales_asignadas=?, limite_prestamos=? WHERE id=?
+                UPDATE estudiantes SET nombre=?, identificacion=?, numero_matricula=?, horas_sociales_asignadas=?, limite_prestamos=?,tiene_multa=? WHERE id=?
             ''', (nombre, identificacion, numero_matricula, horas_sociales_asignadas, limite_prestamos, id_estudiante))
             self.conexion.commit()
         except Exception as e:

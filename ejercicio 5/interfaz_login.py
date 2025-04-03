@@ -129,20 +129,33 @@ class LoginBiblioteca:
                     self.ventana.withdraw()
                     nueva_ventana = tk.Toplevel()
                     InterfazBibliotecario(nueva_ventana, bibliotecario)
-            elif tipo_usuario in ["docente", "estudiante"]:
-                logeador = BibliotecaFacade()
-                usuario = logeador.logear_usuario(tipo_usuario,nombre,id_matricula,identificacion)
-                if usuario == "Error en el id_profesional" or "Error en el numero de matricula":
-                    messagebox.showerror("Error en el id_profesional","El id profesional debe seguir este formato: P#####")
-                elif usuario == "usuario no encontrado" or usuario == None:
-                    messagebox.showwarning("Empleado no encontrado","Ingrese los datos del bibliotecario")
-                else:
-                    messagebox.showinfo("Empleado de la biblioteca encontrado exitosamente","Empleado de la biblioteca encontrado exitosamente")
-                    self.ventana.withdraw()
-                    nueva_ventana = tk.Toplevel()
-                InterfazUsuario(nueva_ventana, nombre, tipo_usuario)
                 nueva_ventana.protocol("WM_DELETE_WINDOW", lambda: self.cerrar_aplicacion(nueva_ventana))
-            elif tipo_usuario == "docente" or tipo_usuario == "estudiante": pass
+            elif tipo_usuario == "docente" or tipo_usuario == "estudiante":
+                logeador = BibliotecaFacade()
+                if tipo_usuario == "docente":
+                    docente = logeador.logear_usuario(tipo_usuario,nombre,id_matricula,identificacion)
+                    if docente == "Error en el id_profesional":
+                        messagebox.showerror("Error en el id_profesional","El id profesional debe seguir este formato: P#####")
+                    elif docente == "Docente no encontrado" or docente == None:
+                        messagebox.showwarning("Docente no encontrado","Ingrese los datos del docente")
+                    else:
+                        messagebox.showinfo("Docente encontrado exitosamente","Docente encontrado exitosamente")
+                        self.ventana.withdraw()
+                        nueva_ventana = tk.Toplevel()
+                        InterfazUsuario(nueva_ventana, docente)
+                    nueva_ventana.protocol("WM_DELETE_WINDOW", lambda: self.cerrar_aplicacion(nueva_ventana))
+                elif tipo_usuario == "estudiante":
+                    estudiante = logeador.logear_usuario(tipo_usuario,nombre,id_matricula,identificacion)
+                    if estudiante == "Error en el número de matrícula":
+                        messagebox.showerror("Error en el número de matricula","El numero de matrícula debe seguir este formato: M#####")
+                    elif estudiante == "Estudiante no encontrado" or estudiante == None:
+                        messagebox.showwarning("Estudiante no encontrado","Ingrese los datos del estudiante")
+                    else:
+                        messagebox.showinfo("Estudiante encontrado exitosamente","Estudiante encontrado exitosamente")
+                        self.ventana.withdraw()
+                        nueva_ventana = tk.Toplevel()
+                        InterfazUsuario(nueva_ventana, estudiante)
+                    nueva_ventana.protocol("WM_DELETE_WINDOW", lambda: self.cerrar_aplicacion(nueva_ventana))
         except OpcionInvalida as e:
             messagebox.showerror("Error en tipo de usuario",e)
         except NombreVacio as e:

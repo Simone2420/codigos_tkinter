@@ -1,6 +1,11 @@
 from modelos import *
 from controladores import *
 class BibliotecaFacade:
+    def __init__(self):
+        self.base_datos_proxy = BaseDatosProxy()
+        self._gestor_usuarios = GestorUsuarios(self.base_datos_proxy)
+        self._gestor_prestamos = GestorPrestamos(self.base_datos_proxy)
+        self._gestor_libros = GestorLibros(self.base_datos_proxy)
     def logear_usuario(self,tipo_usuario,nombre_usuario,id_matricula_usuario,identificacion_usuario):
         empleado = EmpleadoBiblioteca("Blass","P23456",1070300400,100000,"Mañana","Gestionar")
         validar_id_profesional = self.verificar_id_matricula_usuario(id_matricula_usuario,tipo_usuario)
@@ -17,8 +22,22 @@ class BibliotecaFacade:
                     return empleado
                 else:
                     return "Bibliotecario no encontrado"
-        elif tipo_usuario == "docente": pass
-        elif tipo_usuario == "estudiante": pass
+        elif tipo_usuario == "docente":
+            docente = self._gestor_usuarios.ingresar_docente(nombre_usuario,identificacion_usuario,id_matricula_usuario)
+            if docente == False:
+                return "Docente no encontrado"
+            elif validar_id_profesional!= True:
+                return "Error en el id_profesional"
+            else:
+                return docente
+        elif tipo_usuario == "estudiante":
+            estudiante = self._gestor_usuarios.ingresar_estudiante(nombre_usuario,identificacion_usuario,id_matricula_usuario)
+            if estudiante == False:
+                return "Estudiante no encontrado"
+            elif validar_id_profesional!= True:
+                return "Error en el número de matrícula"
+            else:
+                return estudiante
         else:
             return "Tipo de usuario invalido"
     def verificar_id_matricula_usuario(self,id_matricula_usuario,tipo_usuario):

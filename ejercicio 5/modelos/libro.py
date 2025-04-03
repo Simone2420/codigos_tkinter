@@ -1,4 +1,4 @@
-from excepciones import EstadoInvalido
+from .excepciones import EstadoInvalido
 class Libro:
     titulo = ""
     autor = ""
@@ -13,7 +13,9 @@ class Libro:
         self._disponible = True
         self._categoria = categoria
         self._numero_veces_solicitado = 0
-        self.id = id  
+        self._id = id
+    def obtener_id(self):
+        return self._id  
     def obtener_titulo(self):
         return self._titulo
     def obtener_autor(self):
