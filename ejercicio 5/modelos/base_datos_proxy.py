@@ -34,7 +34,29 @@ class BaseDatosProxy:
             libro_objeto.establecer_estado(True)
             libro_objeto.establecer_numero_veces_solicitado(numero_veces_solicitado)
             self._libros.append(libro_objeto)
-            
+    def crear_ultimo_docente_registrado(self):
+        datos_ultimo_docente_registrado = self.conexion.obtener_ultimo_docente_registrado()
+        if datos_ultimo_docente_registrado:
+            id,nombre,identificacion,id_profesional,salario,horario,funciones,limite_libros_prestados,_ = datos_ultimo_docente_registrado
+            docente_objeto = Docente(nombre,identificacion,salario,horario,funciones,id_profesional,limite_prestamos=limite_libros_prestados,id=id)
+            docente_objeto.establecer_tiene_multa(False)
+            self._docentes.append(docente_objeto)
+    def crear_ultimo_estudiante_registrado(self):
+        datos_ultimo_estudiante_registrado = self.conexion.obtener_ultimo_estudiante_registrado()
+        if datos_ultimo_estudiante_registrado:
+            id,nombre,identificacion,numero_matricula,numero_horas_sociales_asignadas,limite_libros_prestados,_ = datos_ultimo_estudiante_registrado
+            estudiante_objeto = Estudiante(nombre,identificacion,numero_matricula,limite_prestamos=limite_libros_prestados,id=id)
+            estudiante_objeto.establecer_tiene_multa(False)
+            estudiante_objeto.establecer_horas_sociales_asignadas(numero_horas_sociales_asignadas)
+            self._estudiantes.append(estudiante_objeto)
+    def crear_ultimo_libro_registrado(self):
+        datos_ultimo_libro_registrado = self.conexion.obtener_ultimo_libro_registrado()
+        if datos_ultimo_libro_registrado:
+            id,titulo,autor,ano_publicacion,categoria,_,numero_veces_solicitado = datos_ultimo_libro_registrado
+            libro_objeto = Libro(titulo,autor,ano_publicacion,categoria,id=id)
+            libro_objeto.establecer_estado(True)
+            libro_objeto.establecer_numero_veces_solicitado(numero_veces_solicitado)
+            self._libros.append(libro_objeto)
     def registrar_prestamo(self,prestamo):
         nombre_usuario = prestamo.obtener_usuario().obtener_nombre()
         identificacion_usuario = prestamo.obtener_usuario().obtener_identificacion()
@@ -63,6 +85,36 @@ class BaseDatosProxy:
             valor_a_pagar_multa,
             tiene_multa
             )
+    def registrar_datos_docente(self,docente):
+        self.conexion.registrar_datos_docente(
+            docente.obtener_nombre(),
+            docente.obtener_identificacion(),
+            docente.obtener_id_profesional(),
+            docente.obtener_salario(),
+            docente.obtener_horario(),
+            docente.obtener_funciones(), 
+            docente.obtener_limite_prestamos() 
+        )
+        self.crear_ultimo_docente_registrado()
+    def registrar_datos_estudiante(self,estudiante):
+        self.conexion.registrar_datos_estudiante(
+            estudiante.obtener_nombre(),
+            estudiante.obtener_identificacion(),
+            estudiante.obtener_numero_matricula(),
+            estudiante.obtener_horas_sociales_asignadas(),
+            estudiante.obtener_limite_prestamos()  
+        )
+        self.crear_ultimo_estudiante_registrado()
+    def registrar_datos_libro(self,libro):
+        self.conexion.registrar_datos_libro(
+            libro.obtener_titulo(),
+            libro.obtener_autor(),
+            libro.obtener_ano_publicacion(),
+            libro.obtener_categoria(),
+            libro.obtener_estado(),
+            libro.obtener_numero_veces_solicitado()  
+        )
+        self.crear_ultimo_libro_registrado()
     def actualizar_datos_prestamo(self,prestamo):
         id_prestamo = prestamo.obtener_id()
         nombre_usuario = prestamo.obtener_usuario().obtener_nombre()

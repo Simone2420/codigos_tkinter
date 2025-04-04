@@ -1,6 +1,6 @@
-from .usuarios import Estudiante,Docente
-from .libro import Libro
-from .conector_base_datos import *
+from modelos.usuarios import Estudiante,Docente
+from modelos.libro import Libro
+from modelos.conector_base_datos import *
 import random
 nombres_docentes = ["Carlos Inti","Blass Muñoz","Omar Bravo","Juan Hediberto","Brian Aldana"]
 nombres_estudiantes = ["Diego Ortiz","Hediberto de las Nieves", "Alberto Fonseca","Carlitos Nuñez","Andres Aya"]

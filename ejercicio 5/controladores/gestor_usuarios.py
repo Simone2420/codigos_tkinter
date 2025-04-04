@@ -17,12 +17,10 @@ class GestorUsuarios():
         return any(usuario.identificacion == identificacion for usuario in self._usuarios)
     def registrar_usuario_nuevo(self, usuario):
         """Registra un nuevo usuario si no existe uno con la misma identificación."""
-        if self.existe_usuario(usuario.obtener_identificacion()):
-            return False
         if usuario.obtener_tipo() == "estudiante":
-            self.base_datos_proxy.registrar_estudiante(usuario)
+            self.base_datos_proxy.registrar_datos_estudiante(usuario)
         elif usuario.obtener_tipo() == "docente":
-            self.base_datos_proxy.registrar_docente(usuario)
+            self.base_datos_proxy.registrar_datos_docente(usuario)
         self._usuarios.append(usuario)  # Agregar a la lista unificada
         return f"Usuario {usuario.obtener_nombre()} de tipo {usuario.obtener_tipo()} fue registrado correctamente."
     def actualizar_docente(self,docente):

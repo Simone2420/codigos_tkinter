@@ -71,8 +71,17 @@ class BibliotecaFacade:
         return self._gestor_usuarios.obtener_docentes()
     def obtener_estudiantes(self):
         return self._gestor_usuarios.obtener_estudiantes()
-    def registrar_usuario(self): pass
-    def mostrar_usuarios(self,tipo): pass
+    def obtener_libros(self):
+        return self._gestor_libros.obtener_libros()
+    def registrar_docente(self,nombre,identificacion,id_matricula,horario,salario=1000000,funciones="enseñar"): 
+        docente_temporal = Docente(nombre,identificacion,salario,horario,funciones,id_matricula)
+        self._gestor_usuarios.registrar_usuario_nuevo(docente_temporal)
+    def registrar_estudiante(self,nombre,identificacion,id_matricula):
+        estudiante_temporal = Estudiante(nombre,identificacion,id_matricula)
+        self._gestor_usuarios.registrar_usuario_nuevo(estudiante_temporal)
+    def registrar_libro(self,categoria,titulo_libro,nombre_autor,ano_publicacion):
+        libro_temporal = Libro(titulo_libro,nombre_autor,ano_publicacion,categoria)
+        self._gestor_libros.registrar_libro(libro_temporal)
     def hacer_prestamo_libro(self,usuario): pass
     def extender_prestamo_libro(self,usuario): pass
     def devolver_prestamo_libro(self,usuario): pass

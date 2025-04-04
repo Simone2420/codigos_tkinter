@@ -176,7 +176,15 @@ class ConectorBasedeDatos:
             self.conexion.commit()
         except Exception as e:
             print(f"Error al actualizar datos: {e}")
-
+    def obtener_ultimo_docente_registrado(self):
+        self.cursor.execute("SELECT * FROM docentes ORDER BY id DESC LIMIT 1")
+        return self.cursor.fetchone()
+    def obtener_ultimo_estudiante_registrado(self):
+        self.cursor.execute("SELECT * FROM estudiantes ORDER BY id DESC LIMIT 1")
+        return self.cursor.fetchone()
+    def obtener_ultimo_libro_registrado(self):
+        self.cursor.execute("SELECT * FROM libros ORDER BY id DESC LIMIT 1")
+        return self.cursor.fetchone()
     def retornar_error(self):
         import traceback
         return traceback.format_exc()
