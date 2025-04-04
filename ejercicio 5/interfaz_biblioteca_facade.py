@@ -1,24 +1,12 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 from biblioteca_facade import BibliotecaFacade
-class InterfazGeneral:
-    def __init__(self,ventana):
-        self.biblioteca_facade = BibliotecaFacade()
-        self.ventana = ventana
-        self.ventana.geometry("1200x700")
-        self.ventana.config(background="#EDEAE0")
-        self.divisor_principal = tk.Frame(self.ventana, background="#EDEAE0")
-        self.divisor_principal.grid(row=0, column=0)
-        self.divisor_secundario = tk.Frame(self.ventana, background="#EDEAE0")
-        self.divisor_secundario.grid(row=0, column=1)
-        self.interfaz_grafica()
-    def interfaz_grafica(self):
-        pass
-class InterfazBibliotecario(InterfazGeneral):
+from modelos.excepciones import *
+class InterfazBibliotecario:
     def __init__(self, ventana, bibliotecario):
         self.biblioteca_facade = BibliotecaFacade()
         self.ventana = ventana
-        self.ventana.geometry("1200x700")
+        self.ventana.geometry("1400x700")
         self.ventana.config(background="#EDEAE0")
         self.divisor_principal = tk.Frame(self.ventana, background="#EDEAE0")
         self.divisor_principal.grid(row=0, column=0)
@@ -74,10 +62,9 @@ class InterfazBibliotecario(InterfazGeneral):
             self.seccion_docentes,
             columns=("id", "nombre", "identificacion", "id_profesional", "salario", "horario", "funciones", "limite", "multa"),
             show="headings",
-            height=3  # Limit visible rows
+            height=3  
         )
         
-        # Configure teachers columns
         self.tabla_docentes.heading("id", text="ID")
         self.tabla_docentes.heading("nombre", text="Nombre")
         self.tabla_docentes.heading("identificacion", text="Identificación")
@@ -158,17 +145,55 @@ class InterfazBibliotecario(InterfazGeneral):
             background="#4CAF50",
             foreground="white"
         ).pack(pady=10)
-
-        self.cargar_datos_treeviews()
+        self.seccion_libros = tk.Frame(self.divisor_secundario, background="#EDEAE0")
+        self.seccion_libros.grid(row=0, column=0, padx=10, pady=5, sticky="nsew")
         
-    def cargar_datos_treeviews(self):
+        tk.Label(
+            self.seccion_libros,
+            text="Lista de Libros",
+            font=("Helvetica", 16),
+            background="#EDEAE0"
+        ).pack(pady=5)
+        
+        self.tabla_libros = ttk.Treeview(
+            self.seccion_libros,
+            columns=("id", "titulo", "autor", "genero", "estado"),
+            show="headings",
+            height=10
+        )
+        
+        self.tabla_libros.heading("id", text="ID")
+        self.tabla_libros.heading("titulo", text="Título")
+        self.tabla_libros.heading("autor", text="Autor")
+        self.tabla_libros.heading("genero", text="Género")
+        self.tabla_libros.heading("estado", text="Estado")
+        
+        self.tabla_libros.column("id", width=50)
+        self.tabla_libros.column("titulo", width=200)
+        self.tabla_libros.column("autor", width=150)
+        self.tabla_libros.column("genero", width=100)
+        self.tabla_libros.column("estado", width=100)
+        
+        self.tabla_libros.pack(fill="both", expand=True, padx=5, pady=5)
+        
+        tk.Button(
+            self.seccion_libros,
+            text="Agregar Libro",
+            command=self.agregar_libro,
+            background="#4CAF50",
+            foreground="white"
+        ).pack(pady=10)
+        self.cargar_tablas()
+        
+    def cargar_tablas(self):
         # Clear existing items
         for item in self.tabla_docentes.get_children():
             self.tabla_docentes.delete(item)
         for item in self.tabla_estudiantes.get_children():
             self.tabla_estudiantes.delete(item)
+        for item in self.tabla_libros.get_children():
+            self.tabla_libros.delete(item)
             
-        # Load teachers data
         docentes = self.biblioteca_facade.obtener_docentes()
         for docente in docentes:
             self.tabla_docentes.insert("", "end", values=(
@@ -195,6 +220,72 @@ class InterfazBibliotecario(InterfazGeneral):
                 estudiante.obtener_limite_prestamos(),
                 "Sí" if estudiante.obtener_tiene_multa() else "No"
             ))
+
+        # Load books data
+        libros = self.biblioteca_facade.obtener_libros()
+        for libro in libros:
+            self.tabla_libros.insert("", "end", values=(
+                libro.obtener_id(),
+                libro.obtener_titulo(),
+                libro.obtener_autor(),
+                libro.obtener_genero(),
+                libro.obtener_estado()
+            ))
+
+    def agregar_libro(self):
+        # Crear ventana emergente para agregar libro
+        ventana_libro = tk.Toplevel(self.ventana)
+        ventana_libro.title("Agregar Libro")
+        ventana_libro.geometry("400x350")
+        ventana_libro.config(background="#EDEAE0")
+    
+        # Crear campos de entrada
+        tk.Label(ventana_libro, text="Título:", background="#EDEAE0").pack(pady=5)
+        titulo = tk.Entry(ventana_libro)
+        titulo.pack(pady=5)
+    
+        tk.Label(ventana_libro, text="Autor:", background="#EDEAE0").pack(pady=5)
+        autor = tk.Entry(ventana_libro)
+        autor.pack(pady=5)
+        tk.Label(ventana_libro, text="Año de publicación:", background="#EDEAE0").pack(pady=5)
+        ano_publicacion = tk.Entry(ventana_libro)
+        ano_publicacion.pack(pady=5)
+        tk.Label(ventana_libro, text="Género:", background="#EDEAE0").pack(pady=5)
+
+        categoria = ttk.Combobox(ventana_libro, values=["Literatura","Novela","Realismo","Ciencia Ficción"])
+        categoria.pack(pady=5)
+        
+        tk.Button(
+            ventana_libro,
+            text="Guardar",
+            command=lambda: self._guardar_libro(ventana_libro, titulo, autor, ano_publicacion , categoria),
+            background="#4CAF50",
+            foreground="white"
+        ).pack(pady=20)
+
+    def _guardar_libro(self, ventana_libro, titulo, autor, ano_publicacion, estado):
+        try:
+            # Validar campos
+            if not titulo.get() or not autor.get() or not ano_publicacion.get() or not estado.get():
+                messagebox.showerror("Error", "Todos los campos son obligatorios")
+                return
+
+            # Crear libro
+            verificador = self.biblioteca_facade.registrar_libro(
+                titulo.get(),
+                autor.get(),
+                ano_publicacion.get(),
+                estado.get()
+            )
+            if isinstance(verificador, DatosInvalidos):
+                messagebox.showerror("Error", str(verificador))
+                return
+            else:
+                messagebox.showinfo("Éxito", "Libro registrado correctamente")
+                self.cargar_tablas()
+            ventana_libro.destroy()
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
     def agregar_estudiante(self):
         # Crear ventana emergente para agregar estudiante
         ventana_estudiante = tk.Toplevel(self.ventana)
@@ -229,20 +320,20 @@ class InterfazBibliotecario(InterfazGeneral):
                 return
 
             # Crear estudiante
-            self.biblioteca_facade.registrar_estudiante(
+            vefificador = self.biblioteca_facade.registrar_estudiante(
                 nombre.get(),
                 int(identificacion.get()),
                 matricula.get()
             )
-            messagebox.showinfo("Éxito", "Estudiante registrado correctamente")
-            self.cargar_datos_treeviews()
+            if isinstance(vefificador,DatosInvalidos):
+                messagebox.showerror("Error", str(vefificador))
+                return
+            else:
+                messagebox.showinfo("Éxito", "Estudiante registrado correctamente")
+                self.cargar_tablas()
             ventana_estudiante.destroy()
         except Exception as e:
             messagebox.showerror("Error", str(e))
-
-    # Botón de guardar
-        
-    
     def agregar_docente(self):
         # Crear ventana emergente para agregar docente
         ventana_docente = tk.Toplevel(self.ventana)
@@ -296,8 +387,8 @@ class InterfazBibliotecario(InterfazGeneral):
                     messagebox.showerror("Error", "El salario debe ser un número")
                     return
     
-                # Crear docente
-                self.biblioteca_facade.registrar_docente(
+                
+                verificador = self.biblioteca_facade.registrar_docente(
                     nombre.get(),
                     identificacion.get(),
                     id_profesional.get(),
@@ -305,14 +396,17 @@ class InterfazBibliotecario(InterfazGeneral):
                     float(salario.get()),
                     funciones.get()
                 )
-                messagebox.showinfo("Éxito", "Docente registrado correctamente")
-                self.cargar_datos_treeviews()
+                if isinstance(verificador,DatosInvalidos):
+                    messagebox.showerror("Error", str(verificador))
+                    return
+                else:
+                    messagebox.showinfo("Éxito", "Docente registrado correctamente")
+                    self.cargar_tablas()
                 ventana_docente.destroy()
             except Exception as e:
                 messagebox.showerror("Error", str(e))
-    
         
-class InterfazUsuario(InterfazGeneral):
+class InterfazUsuario:
     def __init__(self,ventana,usuario):
         super().__init__(ventana)
         self.ventana.title("Ventana del usuario")
