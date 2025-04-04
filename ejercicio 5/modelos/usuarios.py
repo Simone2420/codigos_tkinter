@@ -80,7 +80,17 @@ class Estudiante(UsuarioBase):
         print(f"Horas sociales asignada {self.obtener_horas_sociales_asignadas()}")
         print(f"Limite libros prestados: {self.obtener_limite_prestamos()}")
         print(f"Libros prestados: {self.obtener_libros_prestados()} \n")
-
+    def obtener_informacion(self):
+        return f"""
+ID: {self.obtener_id()}
+Tipo: {self.obtener_tipo().capitalize()}
+Nombre: {self.obtener_nombre()}
+Identificación: {self.obtener_identificacion()}
+Número de Matrícula: {self.obtener_numero_matricula()}
+Horas Sociales Asignadas: {self.obtener_horas_sociales_asignadas()}
+Límite de Préstamos: {self.obtener_limite_prestamos()}
+Libros Prestados: {len(self.obtener_libros_prestados())}
+Estado: {"Con multa" if self.obtener_tiene_multa() else "Sin multa"}"""
     def validar_datos(self):
         try:
             # Validar nombre
@@ -108,14 +118,13 @@ class EmpleadoBiblioteca(Persona):
     salario_constante = 0
     horario = ""
     funciones = ""
-    def __init__(self, nombre, id_profesional, identificacion, salario, horario, funciones,id=0):
+    def __init__(self, nombre, id_profesional, identificacion, salario, horario, funciones):
         super().__init__(nombre, identificacion)
         self.__salario = salario
         self.__id_profesional = id_profesional
         self.__salario_constante = self.__salario
         self.__horario = horario
         self.__funciones = funciones
-        self.id = id
     def obtener_salario(self):
         return self.__salario
     def obtener_salario_constante(self):
@@ -128,7 +137,15 @@ class EmpleadoBiblioteca(Persona):
         return self.__id_profesional
     def obtener_funciones(self):
         return self.__funciones
-
+    def obtener_informacion(self):
+        return f"""
+Nombre: {self.obtener_nombre()}
+Identificación: {self.obtener_identificacion()}
+ID Profesional: {self.obtener_id_profesional()}
+Salario Actual: ${self.obtener_salario():,.2f}
+Salario Base: ${self.obtener_salario_constante():,.2f}
+Horario: {self.obtener_horario()}
+Funciones: {self.obtener_funciones()}"""
 class Docente(UsuarioBase, EmpleadoBiblioteca):
     id_profesional = "P#####"
     def __init__(self, nombre, identificacion, salario, horario, funciones, id_profesional,limite_prestamos=3,id=0):
@@ -153,6 +170,20 @@ class Docente(UsuarioBase, EmpleadoBiblioteca):
         print(f"Funciones: {self.obtener_funciones()}")
         print(f"Limite prestamos: {self.obtener_limite_prestamos()}")
         print(f"Libros prestados: {self.obtener_libros_prestados()} \n")
+    def obtener_informacion(self):
+        return f"""
+ID: {self.obtener_id()}
+Tipo: {self.obtener_tipo().capitalize()}
+Nombre: {self.obtener_nombre()}
+Identificación: {self.obtener_identificacion()}
+ID Profesional: {self.obtener_id_profesional()}
+Salario Actual: ${self.obtener_salario():,.2f}
+Salario Base: ${self.obtener_salario_constante():,.2f}
+Horario: {self.obtener_horario()}
+Funciones: {self.obtener_funciones()}
+Límite de Préstamos: {self.obtener_limite_prestamos()}
+Libros Prestados: {len(self.obtener_libros_prestados())}
+Estado: {"Con multa" if self.obtener_tiene_multa() else "Sin multa"}"""
     def validar_datos(self):
         try:
             # Validar nombre

@@ -60,6 +60,17 @@ class BibliotecaFacade:
                 return True
         except DatosInvalidos as e:
             return e
+    def obtener_informacion_usuario(self,usuario):
+        if isinstance(usuario,Docente):
+            return usuario.obtener_informacion()
+        elif isinstance(usuario,Estudiante):
+            return usuario.obtener_informacion()
+        elif isinstance(usuario,EmpleadoBiblioteca):
+            return usuario.obtener_informacion()
+    def obtener_docentes(self):
+        return self._gestor_usuarios.obtener_docentes()
+    def obtener_estudiantes(self):
+        return self._gestor_usuarios.obtener_estudiantes()
     def registrar_usuario(self): pass
     def mostrar_usuarios(self,tipo): pass
     def hacer_prestamo_libro(self,usuario): pass
