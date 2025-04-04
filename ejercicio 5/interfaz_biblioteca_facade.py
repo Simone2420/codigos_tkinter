@@ -157,7 +157,7 @@ class InterfazBibliotecario:
         
         self.tabla_libros = ttk.Treeview(
             self.seccion_libros,
-            columns=("id", "titulo", "autor", "genero", "estado"),
+            columns=("id", "titulo", "autor", "año_publicacion", "categoria"),
             show="headings",
             height=10
         )
@@ -165,14 +165,14 @@ class InterfazBibliotecario:
         self.tabla_libros.heading("id", text="ID")
         self.tabla_libros.heading("titulo", text="Título")
         self.tabla_libros.heading("autor", text="Autor")
-        self.tabla_libros.heading("genero", text="Género")
-        self.tabla_libros.heading("estado", text="Estado")
+        self.tabla_libros.heading("año_publicacion", text="Año Publicación")
+        self.tabla_libros.heading("categoria", text="Categoria")
         
         self.tabla_libros.column("id", width=50)
-        self.tabla_libros.column("titulo", width=200)
-        self.tabla_libros.column("autor", width=150)
-        self.tabla_libros.column("genero", width=100)
-        self.tabla_libros.column("estado", width=100)
+        self.tabla_libros.column("titulo", width=100)
+        self.tabla_libros.column("autor", width=140)
+        self.tabla_libros.column("año_publicacion", width=70)
+        self.tabla_libros.column("categoria", width=80)
         
         self.tabla_libros.pack(fill="both", expand=True, padx=5, pady=5)
         
@@ -228,8 +228,8 @@ class InterfazBibliotecario:
                 libro.obtener_id(),
                 libro.obtener_titulo(),
                 libro.obtener_autor(),
-                libro.obtener_genero(),
-                libro.obtener_estado()
+                libro.obtener_ano_publicacion(),
+                libro.obtener_categoria()
             ))
 
     def agregar_libro(self):
@@ -263,26 +263,24 @@ class InterfazBibliotecario:
             foreground="white"
         ).pack(pady=20)
 
-    def _guardar_libro(self, ventana_libro, titulo, autor, ano_publicacion, estado):
+    def _guardar_libro(self, ventana_libro, titulo, autor, ano_publicacion, categoria):
         try:
             # Validar campos
-            if not titulo.get() or not autor.get() or not ano_publicacion.get() or not estado.get():
+            if not titulo.get() or not autor.get() or not ano_publicacion.get() or not categoria.get():
                 messagebox.showerror("Error", "Todos los campos son obligatorios")
                 return
 
             # Crear libro
-            verificador = self.biblioteca_facade.registrar_libro(
+            self.biblioteca_facade.registrar_libro(
                 titulo.get(),
                 autor.get(),
                 ano_publicacion.get(),
-                estado.get()
+                categoria.get()
+                
             )
-            if isinstance(verificador, DatosInvalidos):
-                messagebox.showerror("Error", str(verificador))
-                return
-            else:
-                messagebox.showinfo("Éxito", "Libro registrado correctamente")
-                self.cargar_tablas()
+            
+            messagebox.showinfo("Éxito", "Libro registrado correctamente")
+            self.cargar_tablas()
             ventana_libro.destroy()
         except Exception as e:
             messagebox.showerror("Error", str(e))

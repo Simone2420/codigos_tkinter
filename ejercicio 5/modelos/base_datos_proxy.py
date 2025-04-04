@@ -111,7 +111,7 @@ class BaseDatosProxy:
             libro.obtener_autor(),
             libro.obtener_ano_publicacion(),
             libro.obtener_categoria(),
-            libro.obtener_estado(),
+            libro.obtener_esta_disponible(),
             libro.obtener_numero_veces_solicitado()  
         )
         self.crear_ultimo_libro_registrado()
@@ -188,7 +188,7 @@ class BaseDatosProxy:
             autor = libro.obtener_autor()
             ano_publicacion = libro.obtener_ano_publicacion()
             categoria = libro.obtener_categoria()
-            estado = libro.obtener_estado()
+            estado = libro.obtener_esta_disponible()
             numero_veces_solicitado = libro.obtener_numero_veces_solicitado()
             self.conexion.actualizar_datos_libro(
                 id_libro,

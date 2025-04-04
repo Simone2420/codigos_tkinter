@@ -109,8 +109,8 @@ class BibliotecaFacade:
             estudiante_temporal = Estudiante(nombre,
             identificacion,id_matricula)
             self._gestor_usuarios.registrar_usuario_nuevo(estudiante_temporal)
-    def registrar_libro(self,categoria,titulo_libro,
-    nombre_autor,ano_publicacion):
+    def registrar_libro(self,titulo_libro,
+    nombre_autor,ano_publicacion,categoria):
         libro_temporal = Libro(titulo_libro,
         nombre_autor,ano_publicacion,categoria)
         self._gestor_libros.registrar_libro(libro_temporal)
@@ -119,8 +119,6 @@ class BibliotecaFacade:
     def devolver_prestamo_libro(self,usuario): pass
     def cobrar_multa_usuario(self,usuario): pass
     def mostrar_libros(self,categoria): pass
-    def registrar_libro(self,categoria,titulo_libro,
-    nombre_autor,ano_publicacion): pass
     def mostrar_libros_mas_solicitados(self): pass
     def mostrar_prestamos_activos(self): pass
     def mostrar_historico_prestamo(self): pass

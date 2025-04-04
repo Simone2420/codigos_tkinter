@@ -11,7 +11,7 @@ class GestorLibros:
         return self._libros_disponibles
     def actualizar_datos_libro(self,libro):
         self.base_datos_proxy.actualizar_datos_libro(libro)
-    def registrar_nuevo_libro(self,nuevo_libro):
+    def registrar_libro(self,nuevo_libro):
         self._libros_disponibles.append(nuevo_libro)
         self.base_datos_proxy.registrar_datos_libro(nuevo_libro)
     def quitar_libro(self,indice_libro):
