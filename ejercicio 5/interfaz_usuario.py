@@ -62,7 +62,7 @@ class InterfazUsuario:
         self.tabla_libros_prestados = ttk.Treeview(
             self.seccion_libros_prestados, 
             columns=("ID", "Titulo", "Autor", "Año de publicacion"
-            ,"Categoria","Fecha de prestamo","Fecha de devolucion"), 
+            ,"Categoria","Fecha de prestamo","Fecha de devolucion", "Fecha de devolucion reasignada"), 
             show="headings")
         self.tabla_libros_prestados.heading("ID", text="ID")
         self.tabla_libros_prestados.column("ID", width=50)
@@ -78,6 +78,8 @@ class InterfazUsuario:
         self.tabla_libros_prestados.column("Fecha de prestamo", width=70)
         self.tabla_libros_prestados.heading("Fecha de devolucion", text="Fecha de devolucion")
         self.tabla_libros_prestados.column("Fecha de devolucion", width=70)
+        self.tabla_libros_prestados.heading("Fecha de devolucion reasignada", text="Fecha de devolucion reasignada")
+        self.tabla_libros_prestados.column("Fecha de devolucion reasignada", width=70)
         self.tabla_libros_prestados.pack()
         self.tabla_libros_prestados.config(height=5)
         #agregar boton para extender prestamo
@@ -142,6 +144,7 @@ class InterfazUsuario:
                 prestamo.obtener_libro().obtener_ano_publicacion(),
                 prestamo.obtener_libro().obtener_categoria(),
                 prestamo.obtener_fecha_prestamo(),
-                prestamo.obtener_fecha_devolucion_esperada()   
+                prestamo.obtener_fecha_devolucion_esperada(),
+                prestamo.obtener_fecha_reasignacion()   
             ))
         
