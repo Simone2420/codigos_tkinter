@@ -25,6 +25,7 @@ class Prestamo:
         self._valor_a_pagar_multa = 0
         self._tiene_multa = False
         self._id = id
+        self.prestar_libro()
     def obtener_id(self):
         return self._id
     def __str__(self):

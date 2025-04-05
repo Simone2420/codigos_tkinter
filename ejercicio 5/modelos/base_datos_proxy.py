@@ -1,6 +1,7 @@
 from .conector_base_datos import *
 from .usuarios import Docente,Estudiante
 from .libro import Libro
+from .prestamo import Prestamo
 class BaseDatosProxy:
     def __init__(self):
         self._docentes = []
@@ -57,6 +58,22 @@ class BaseDatosProxy:
             libro_objeto.establecer_estado(True)
             libro_objeto.establecer_numero_veces_solicitado(numero_veces_solicitado)
             self._libros.append(libro_objeto)
+    def crear_ultimo_prestamo_registrado(self):
+        datos_ultimo_prestamo_registrado = self.conexion.obtener_ultimo_prestamo_registrado()
+        if datos_ultimo_prestamo_registrado:
+            id,_,_,id_usuario,tipo_usuario,titulo_libro,fecha_prestamo,fecha_devolucion_esperada,fecha_devolucion,fecha_devolucion_reagsignada,valor_multa,valor_a_pagar_multa,tiene_multa = datos_ultimo_prestamo_registrado
+            if tipo_usuario == "Docente":
+                usuario_objeto = self.buscar_docente_por_id(id_usuario)
+            else:
+                usuario_objeto = self.buscar_estudiante_por_id(id_usuario)
+            libro_objeto = self.buscar_libro_por_titulo(titulo_libro)
+            prestamo_objeto = Prestamo(usuario_objeto,libro_objeto,id=id)
+            prestamo_objeto.establecer_fecha_prestamo(fecha_prestamo)
+            prestamo_objeto.establecer_fecha_devolucion_esperada(fecha_devolucion_esperada)
+            prestamo_objeto.establecer_valor_multa(valor_multa)
+            prestamo_objeto.establecer_valor_a_pagar_multa(valor_a_pagar_multa)
+            prestamo_objeto.establecer_tiene_multa(tiene_multa)
+            self._prestamos.append(prestamo_objeto)
     def registrar_prestamo(self,prestamo):
         nombre_usuario = prestamo.obtener_usuario().obtener_nombre()
         identificacion_usuario = prestamo.obtener_usuario().obtener_identificacion()
@@ -85,6 +102,7 @@ class BaseDatosProxy:
             valor_a_pagar_multa,
             tiene_multa
             )
+        self.crear_ultimo_prestamo_registrado()
     def registrar_datos_docente(self,docente):
         self.conexion.registrar_datos_docente(
             docente.obtener_nombre(),
@@ -144,67 +162,85 @@ class BaseDatosProxy:
             valor_a_pagar_multa,
             tiene_multa
         )
-        def actualizar_datos_docente(self,docente):
-            id_docente = docente.obtener_id()
-            nombre = docente.obtener_nombre()
-            identificacion = docente.obtener_identificacion()
-            id_profesional = docente.obtener_id_profesional()
-            salario = docente.obtener_salario()
-            horario = docente.obtener_horario()
-            funciones = docente.obtener_funciones()
-            limite_prestamos = docente.obtener_limite_prestamos()
-            tiene_multa = docente.obtener_tiene_multa()
-            self.conexion.actualizar_datos_docente(
-                id_docente,
-                nombre,
-                identificacion,
-                id_profesional,
-                salario,
-                horario,
-                funciones,
-                limite_prestamos,
-                tiene_multa
-            )
-        def actualizar_datos_estudiante(self,estudiante):
-            id_estudiante = estudiante.obtener_id()
-            nombre = estudiante.obtener_nombre()
-            identificacion = estudiante.obtener_identificacion()
-            numero_matricula = estudiante.obtener_numero_matricula()
-            numero_horas_sociales_asignadas = estudiante.obtener_horas_sociales_asignadas()
-            limite_prestamos = estudiante.obtener_limite_prestamos()
-            tiene_multa = estudiante.obtener_tiene_multa()
-            self.conexion.actualizar_datos_estudiante(
-                id_estudiante,
-                nombre,
-                identificacion,
-                numero_matricula,
-                numero_horas_sociales_asignadas,
-                limite_prestamos,
-                tiene_multa 
-            )
-        def actualizar_datos_libro(self,libro):
-            id_libro = libro.obtener_id()
-            titulo = libro.obtener_titulo()
-            autor = libro.obtener_autor()
-            ano_publicacion = libro.obtener_ano_publicacion()
-            categoria = libro.obtener_categoria()
-            estado = libro.obtener_esta_disponible()
-            numero_veces_solicitado = libro.obtener_numero_veces_solicitado()
-            self.conexion.actualizar_datos_libro(
-                id_libro,
-                titulo,
-                autor,
-                ano_publicacion,
-                categoria,
-                estado,
-                numero_veces_solicitado
-            )
+    def actualizar_datos_docente(self,docente):
+        id_docente = docente.obtener_id()
+        nombre = docente.obtener_nombre()
+        identificacion = docente.obtener_identificacion()
+        id_profesional = docente.obtener_id_profesional()
+        salario = docente.obtener_salario()
+        horario = docente.obtener_horario()
+        funciones = docente.obtener_funciones()
+        limite_prestamos = docente.obtener_limite_prestamos()
+        tiene_multa = docente.obtener_tiene_multa()
+        self.conexion.actualizar_datos_docente(
+            id_docente,
+            nombre,
+            identificacion,
+            id_profesional,
+            salario,
+            horario,
+            funciones,
+            limite_prestamos,
+            tiene_multa
+        )
+    def actualizar_datos_estudiante(self,estudiante):
+        id_estudiante = estudiante.obtener_id()
+        nombre = estudiante.obtener_nombre()
+        identificacion = estudiante.obtener_identificacion()
+        numero_matricula = estudiante.obtener_numero_matricula()
+        numero_horas_sociales_asignadas = estudiante.obtener_horas_sociales_asignadas()
+        limite_prestamos = estudiante.obtener_limite_prestamos()
+        tiene_multa = estudiante.obtener_tiene_multa()
+        self.conexion.actualizar_datos_estudiante(
+            id_estudiante,
+            nombre,
+            identificacion,
+            numero_matricula,
+            numero_horas_sociales_asignadas,
+            limite_prestamos,
+            tiene_multa 
+        )
+    def actualizar_datos_libro(self,libro):
+        id_libro = libro.obtener_id()
+        titulo = libro.obtener_titulo()
+        autor = libro.obtener_autor()
+        ano_publicacion = libro.obtener_ano_publicacion()
+        categoria = libro.obtener_categoria()
+        estado = libro.obtener_esta_disponible()
+        numero_veces_solicitado = libro.obtener_numero_veces_solicitado()
+        self.conexion.actualizar_datos_libro(
+            id_libro,
+            titulo,
+            autor,
+            ano_publicacion,
+            categoria,
+            estado,
+            numero_veces_solicitado
+        )
+    def buscar_docente_por_id(self,id_docente):
+        for docente in self._docentes:
+            if docente.obtener_id() == id_docente:
+                return docente
+    def buscar_estudiante_por_id(self,id_estudiante):
+        for estudiante in self._estudiantes:
+            if estudiante.obtener_id() == id_estudiante:
+                return estudiante
+    def buscar_libro_por_id(self,id_libro):
+        for libro in self._libros:
+            if libro.obtener_id() == id_libro:
+                return libro
+    def buscar_libro_por_titulo(self,titulo_libro):
+        for libro in self._libros:
+            if libro.obtener_titulo() == titulo_libro:
+                return libro
     def obtener_docentes(self):
         return self._docentes
     def obtener_estudiantes(self):
         return self._estudiantes
     def obtener_libros(self):
         return self._libros
+    def obtener_prestamos(self):
+        return self._prestamos
 if __name__ == "__main__":
     # from datetime import datetime, timedelta
     # from prestamo import Prestamo  # Make sure to import the Prestamo class

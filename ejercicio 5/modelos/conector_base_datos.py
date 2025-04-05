@@ -185,6 +185,9 @@ class ConectorBasedeDatos:
     def obtener_ultimo_libro_registrado(self):
         self.cursor.execute("SELECT * FROM libros ORDER BY id DESC LIMIT 1")
         return self.cursor.fetchone()
+    def obtener_ultimo_prestamo_registrado(self):
+        self.cursor.execute("SELECT * FROM prestamos ORDER BY id DESC LIMIT 1")
+        return self.cursor.fetchone()
     def retornar_error(self):
         import traceback
         return traceback.format_exc()

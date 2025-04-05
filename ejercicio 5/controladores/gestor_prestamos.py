@@ -3,10 +3,9 @@ class GestorPrestamos:
     historico_prestmos = []
     def __init__(self,base_datos_proxy):
         self.base_datos_proxy = base_datos_proxy
-        self._prestamos = []
-        self._historico_prestamos = []
+        self._prestamos = self.base_datos_proxy.obtener_prestamos()
+        self._historico_prestamos = self._prestamos.copy()
     def agregar_prestamo(self,prestamo):
-        self._historico_prestamos.append(prestamo)
         self.base_datos_proxy.registrar_prestamo(prestamo)
     def actualizar_prestamo(self,prestamo):
         self.base_datos_proxy.actualizar_prestamo(prestamo)
