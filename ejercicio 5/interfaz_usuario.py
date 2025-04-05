@@ -100,7 +100,12 @@ class InterfazUsuario:
         if not seleccion:
             messagebox.showwarning("Selección vacía", "Selecciona un producto para eliminar.")
             return
-        
+        if self.usuario.obtener_tipo() >= "docente" and self.usuario.obtener_limite_prestamos() <= 0:
+            messagebox.showwarning("Limite de prestamos", "No puedes tener mas de 3 prestamos activos.")
+            return
+        if self.usuario.obtener_tipo() == "estudiante" and self.usuario.obtener_limite_prestamos() <= 0:
+            messagebox.showwarning("Limite de prestamos", "No puedes tener mas de 2 prestamos activos.")
+            return
         id_libro = self.tabla_libros_disponibles.item(seleccion[0], "values")[0]
         libro_obtenido = self.biblioteca_facade.buscar_libro_por_id(int(id_libro))
         self.biblioteca_facade.hacer_prestamo_libro(self.usuario,libro_obtenido)
@@ -128,7 +133,7 @@ class InterfazUsuario:
                 libro.obtener_ano_publicacion(),
                 libro.obtener_categoria()
             ))
-        prestamos_activos = self.biblioteca_facade.obtener_prestamos_activos()
+        prestamos_activos = self.biblioteca_facade.obtener_prestamos_activos_usuario(self.usuario)
         for prestamo in prestamos_activos:
             self.tabla_libros_prestados.insert("", "end", values=(
                 prestamo.obtener_libro().obtener_id(),

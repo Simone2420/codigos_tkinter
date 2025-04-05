@@ -122,6 +122,12 @@ class BibliotecaFacade:
         self._gestor_libros.registrar_libro(libro_temporal)
     def hacer_prestamo_libro(self,usuario,libro):
         prestamo_temporal = Prestamo(usuario,libro)
+        prestamo_temporal.prestar_libro()
+        if usuario.obtener_tipo() == "estudiante":
+            self.actualizar_datos_estudiante(usuario)
+        elif usuario.obtener_tipo() == "docente":
+            self.actualizar_datos_docente(usuario)
+        self._gestor_libros.actualizar_datos_libro(libro)
         self._gestor_prestamos.agregar_prestamo(prestamo_temporal)
     def buscar_libro_por_titulo(self,titulo_libro):
         libros = self._gestor_libros.obtener_libros()
@@ -133,6 +139,16 @@ class BibliotecaFacade:
         for libro in libros:
             if libro.obtener_id() == id_libro:
                 return libro
+    def obtener_prestamos_activos_usuario(self,usuario):
+        return self._gestor_prestamos.filtrar_prestamos_por_usuario(usuario)
+    def actualizar_datos_docente(self,docente):
+        self._gestor_usuarios.actualizar_docente(docente)
+    def actualizar_datos_estudiante(self,estudiante):
+        self._gestor_usuarios.actualizar_estudiante(estudiante)
+    def actualizar_datos_libro(self,libro):
+        self._gestor_libros.actualizar_datos_libro(libro)
+    def actualizar_datos_prestamo(self,prestamo):
+        self._gestor_prestamos.actualizar_prestamo(prestamo)
     def extender_prestamo_libro(self,usuario): pass
     def devolver_prestamo_libro(self,usuario): pass
     def cobrar_multa_usuario(self,usuario): pass

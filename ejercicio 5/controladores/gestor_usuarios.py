@@ -24,11 +24,10 @@ class GestorUsuarios():
         self._usuarios.append(usuario)  # Agregar a la lista unificada
         return f"Usuario {usuario.obtener_nombre()} de tipo {usuario.obtener_tipo()} fue registrado correctamente."
     def actualizar_docente(self,docente):
-        self.base_datos_proxy.actualizar_docente(docente)
+        self.base_datos_proxy.actualizar_datos_docente(docente)
     def actualizar_estudiante(self,estudiante):
-        self.base_datos_proxy.actualizar_estudiante(estudiante)
+        self.base_datos_proxy.actualizar_datos_estudiante(estudiante)
     def buscar_usuario(self, identificacion):
-        """Busca un usuario por su identificación."""
         for usuario in self._usuarios:
             if usuario.obtener_identificacion() == identificacion:
                 return usuario

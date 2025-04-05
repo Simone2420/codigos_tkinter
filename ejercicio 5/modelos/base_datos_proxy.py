@@ -12,6 +12,7 @@ class BaseDatosProxy:
         self.crear_docentes()
         self.crear_estudiantes()
         self.crear_libros()
+        self.obtener_prestamos_base_datos()
     def crear_docentes(self):
         docentes = self.conexion.obtener_datos_docentes()
         for docente in docentes:
@@ -35,6 +36,28 @@ class BaseDatosProxy:
             libro_objeto.establecer_estado(True)
             libro_objeto.establecer_numero_veces_solicitado(numero_veces_solicitado)
             self._libros.append(libro_objeto)
+    def obtener_prestamos_base_datos(self):
+        prestamos_base_datos = self.conexion.obtener_datos_prestamos()
+        if prestamos_base_datos:
+            for prestamo in prestamos_base_datos:
+                id,_,_,id_usuario,tipo_usuario,titulo_libro,fecha_prestamo,fecha_devolucion_esperada,fecha_devolucion,fecha_devolucion_reagsignada,valor_multa,valor_a_pagar_multa,tiene_multa = prestamo
+                if tipo_usuario.lower() == "docente":
+                    usuario_objeto = self.buscar_docente_por_id(int(id_usuario))
+                else:
+                    usuario_objeto = self.buscar_estudiante_por_id(int(id_usuario))
+                libro_objeto = self.buscar_libro_por_titulo(titulo_libro)
+                prestamo_objeto = Prestamo(usuario_objeto,libro_objeto,id=int(id))
+                prestamo_objeto.establecer_fecha_prestamo(fecha_prestamo)
+                prestamo_objeto.establecer_fecha_devolucion_esperada(fecha_devolucion_esperada)
+                prestamo_objeto.establecer_fecha_devolucion(fecha_devolucion)
+                prestamo_objeto.establecer_fecha_reagsignacion(fecha_devolucion_reagsignada)
+                prestamo_objeto.establecer_valor_multa(valor_multa)
+                prestamo_objeto.establecer_valor_a_pagar_multa(valor_a_pagar_multa)
+                prestamo_objeto.establecer_tiene_multa(tiene_multa)
+                prestamo_objeto.obtener_libro().establecer_estado(False)
+                self._prestamos.append(prestamo_objeto)
+                self.actualizar_datos_libro(libro_objeto)
+                self.actualizar_datos_docente(usuario_objeto)
     def crear_ultimo_docente_registrado(self):
         datos_ultimo_docente_registrado = self.conexion.obtener_ultimo_docente_registrado()
         if datos_ultimo_docente_registrado:
@@ -70,6 +93,8 @@ class BaseDatosProxy:
             prestamo_objeto = Prestamo(usuario_objeto,libro_objeto,id=id)
             prestamo_objeto.establecer_fecha_prestamo(fecha_prestamo)
             prestamo_objeto.establecer_fecha_devolucion_esperada(fecha_devolucion_esperada)
+            prestamo_objeto.establecer_fecha_devolucion(fecha_devolucion)
+            prestamo_objeto.establecer_fecha_reagsignacion(fecha_devolucion_reagsignada)
             prestamo_objeto.establecer_valor_multa(valor_multa)
             prestamo_objeto.establecer_valor_a_pagar_multa(valor_a_pagar_multa)
             prestamo_objeto.establecer_tiene_multa(tiene_multa)

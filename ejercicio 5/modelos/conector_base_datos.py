@@ -12,7 +12,7 @@ class ConectorBasedeDatos:
             self.error = False
         except Exception as e:
             self.error = self.retornar_error()
-    
+    # a
     def crear_tabla_docentes(self):
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS docentes (
