@@ -19,6 +19,14 @@ class InterfazUsuario:
         self.seccion_principal = tk.Frame(self.divisor_principal, background="#EDEAE0")
         self.seccion_principal.grid(row=1, column=0, sticky="nsew")
         self.interfaz_grafica()
+        # Add this line to bind space key
+        self.ventana.bind('<space>', lambda event: self.aumentar_fechas_eventos())
+
+    # Modify the method to handle the event
+    def aumentar_fechas_eventos(self):
+        # Add your logic here
+        print("Space pressed - Updating dates")  # For testing
+        # Call any methods you need to update dates
     def interfaz_grafica(self):
         tk.Label(
             self.seccion_informacion,
@@ -114,9 +122,25 @@ class InterfazUsuario:
         self.actualizar_informacion()
         self.actualizar_tablas()
     def extender_prestamo(self):
-        pass
+        seleccion = self.tabla_libros_prestados.selection()
+        if not seleccion:
+            messagebox.showwarning("Selección vacía", "Selecciona un producto para eliminar.")
+            return
+        id_prestamo = self.tabla_libros_prestados.item(seleccion[0], "values")[0]
+        prestamo_obtenido = self.biblioteca_facade.buscar_prestamo_por_id(int(id_prestamo))
+        self.biblioteca_facade.extender_prestamo(self.usuario,prestamo_obtenido)
+        self.actualizar_informacion()
+        self.actualizar_tablas()
     def devolver_prestamo(self):
-        pass
+        seleccion = self.tabla_libros_prestados.selection()
+        if not seleccion:
+            messagebox.showwarning("Selección vacía", "Selecciona un producto para eliminar.")
+            return
+        id_prestamo = self.tabla_libros_prestados.item(seleccion[0], "values")[0]
+        prestamo_obtenido = self.biblioteca_facade.buscar_prestamo_por_id(int(id_prestamo))
+        self.biblioteca_facade.devolver_prestamo(self.usuario,prestamo_obtenido)
+        self.actualizar_informacion()
+        self.actualizar_tablas()
     def actualizar_informacion(self):
         self.informacion.config(text=self.biblioteca_facade.obtener_informacion_usuario(self.usuario))
     def actualizar_tablas(self):

@@ -149,8 +149,36 @@ class BibliotecaFacade:
         self._gestor_libros.actualizar_datos_libro(libro)
     def actualizar_datos_prestamo(self,prestamo):
         self._gestor_prestamos.actualizar_prestamo(prestamo)
-    def extender_prestamo_libro(self,usuario): pass
-    def devolver_prestamo_libro(self,usuario): pass
+    def buscar_prestamo_por_nombre_libro(self,nombre_libro):
+        prestamos = self._gestor_prestamos.obtener_prestamos()
+        for prestamo in prestamos:
+            if prestamo.obtener_libro().obtener_titulo() == nombre_libro:
+                return prestamo
+    def extender_prestamo_libro(self,usuario,prestamo):
+        validador = prestamo.extender_prestamo()
+        if validador != False:           
+            self._gestor_prestamos.actualizar_prestamo(prestamo)
+            self._gestor_libros.actualizar_datos_libro(prestamo.obtener_libro())
+            if usuario.obtener_tipo() == "estudiante":
+                self.actualizar_datos_estudiante(usuario)
+            elif usuario.obtener_tipo() == "docente":
+                self.actualizar_datos_docente(usuario)
+        
+        
+    def devolver_prestamo_libro(self,usuario,prestamo):
+        validador = prestamo.devolver_libro()
+        if validador!= False:
+            self._gestor_prestamos.actualizar_prestamo(prestamo)
+            self._gestor_libros.actualizar_datos_libro(prestamo.obtener_libro())
+            if usuario.obtener_tipo() == "estudiante":
+                self.actualizar_datos_estudiante(usuario)
+            elif usuario.obtener_tipo() == "docente":
+                self.actualizar_datos_docente(usuario)
+    def buscar_prestamo_por_id(self,id_prestamo):
+        prestamos = self._gestor_prestamos.obtener_prestamos()
+        for prestamo in prestamos:
+            if prestamo.obtener_id() == id_prestamo:
+                return prestamo
     def cobrar_multa_usuario(self,usuario): pass
     def mostrar_libros(self,categoria): pass
     def mostrar_libros_mas_solicitados(self): pass
