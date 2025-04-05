@@ -46,7 +46,6 @@ class InterfazBibliotecario:
             background="#EDEAE0"
         ).grid(row=0, column=0, sticky="nsew")
 
-        # Frame for teachers
         self.seccion_docentes = tk.Frame(self.seccion_usuarios, background="#EDEAE0")
         self.seccion_docentes.grid(row=1, column=0, padx=10, pady=(5,10), sticky="nsew")
         
@@ -57,7 +56,6 @@ class InterfazBibliotecario:
             background="#EDEAE0"
         ).pack(pady=5)
         
-        # Teachers Treeview with height limit
         self.tabla_docentes = ttk.Treeview(
             self.seccion_docentes,
             columns=("id", "nombre", "identificacion", "id_profesional", "salario", "horario", "funciones", "limite", "multa"),
@@ -159,7 +157,7 @@ class InterfazBibliotecario:
             self.seccion_libros,
             columns=("id", "titulo", "autor", "año_publicacion", "categoria"),
             show="headings",
-            height=10
+            height=5
         )
         
         self.tabla_libros.heading("id", text="ID")
@@ -183,8 +181,99 @@ class InterfazBibliotecario:
             background="#4CAF50",
             foreground="white"
         ).pack(pady=10)
+        
+        # Sección de préstamos activos
+        self.seccion_prestamos = tk.Frame(self.divisor_secundario, background="#EDEAE0")
+        self.seccion_prestamos.grid(row=1, column=0, padx=10, pady=5, sticky="nsew")
+        
+        tk.Label(
+            self.seccion_prestamos,
+            text="Préstamos Activos",
+            font=("Helvetica", 16),
+            background="#EDEAE0"
+        ).pack(pady=5)
+        
+        self.tabla_prestamos_activos = ttk.Treeview(
+            self.seccion_prestamos,
+            columns=("id", "nombre_usuario", "id_usuario", "tipo_usuario", "titulo_libro", "fecha_prestamo", "fecha_devolucion", "fecha_reasignada"),
+            show="headings",
+            height=5
+        )
+        
+        self.tabla_prestamos_activos.heading("id", text="ID Préstamo")
+        self.tabla_prestamos_activos.heading("nombre_usuario", text="Nombre Usuario")
+        self.tabla_prestamos_activos.heading("id_usuario", text="ID Usuario")
+        self.tabla_prestamos_activos.heading("tipo_usuario", text="Tipo Usuario")
+        self.tabla_prestamos_activos.heading("titulo_libro", text="Título Libro")
+        self.tabla_prestamos_activos.heading("fecha_prestamo", text="Fecha Préstamo")
+        self.tabla_prestamos_activos.heading("fecha_devolucion", text="Fecha Devolución")
+        self.tabla_prestamos_activos.heading("fecha_reasignada", text="Fecha Reasignada")
+        
+        self.tabla_prestamos_activos.column("id", width=50)
+        self.tabla_prestamos_activos.column("nombre_usuario", width=80)
+        self.tabla_prestamos_activos.column("id_usuario", width=50)
+        self.tabla_prestamos_activos.column("tipo_usuario", width=60)
+        self.tabla_prestamos_activos.column("titulo_libro", width=85)
+        self.tabla_prestamos_activos.column("fecha_prestamo", width=80)
+        self.tabla_prestamos_activos.column("fecha_devolucion", width=80)
+        self.tabla_prestamos_activos.column("fecha_reasignada", width=80)
+        
+        self.tabla_prestamos_activos.pack(fill="both", expand=True, padx=5, pady=5)
+        
+        # Sección de historial de préstamos
+        tk.Label(
+            self.seccion_prestamos,
+            text="Historial de Préstamos",
+            font=("Helvetica", 16),
+            background="#EDEAE0"
+        ).pack(pady=5)
+        
+        self.tabla_historial = ttk.Treeview(
+            self.seccion_prestamos,
+            columns=("id", "nombre_usuario", "id_usuario", "tipo_usuario", "titulo_libro", "fecha_prestamo", "fecha_devolucion", "fecha_reasignada", "estado", "multa"),
+            show="headings",
+            height=5
+        )
+        
+        self.tabla_historial.heading("id", text="ID Préstamo")
+        self.tabla_historial.heading("nombre_usuario", text="Nombre Usuario")
+        self.tabla_historial.heading("id_usuario", text="ID Usuario")
+        self.tabla_historial.heading("tipo_usuario", text="Tipo Usuario")
+        self.tabla_historial.heading("titulo_libro", text="Título Libro")
+        self.tabla_historial.heading("fecha_prestamo", text="Fecha Préstamo")
+        self.tabla_historial.heading("fecha_devolucion", text="Fecha Devolución")
+        self.tabla_historial.heading("fecha_reasignada", text="Fecha Reasignada")
+        self.tabla_historial.heading("estado", text="Estado")
+        self.tabla_historial.heading("multa", text="Multa")
+        
+        self.tabla_historial.column("id", width=50)
+        self.tabla_historial.column("nombre_usuario", width=80)
+        self.tabla_historial.column("id_usuario", width=50)
+        self.tabla_historial.column("tipo_usuario", width=60)
+        self.tabla_historial.column("titulo_libro", width=85)
+        self.tabla_historial.column("fecha_prestamo", width=75)
+        self.tabla_historial.column("fecha_devolucion", width=75)
+        self.tabla_historial.column("fecha_reasignada", width=75)
+        self.tabla_historial.column("estado", width=50)
+        self.tabla_historial.column("multa", width=40)
+        
+        self.tabla_historial.pack(fill="both", expand=True, padx=5, pady=5)
+
+        self.boton_cerrar_sesion = tk.Button(
+            self.seccion_prestamos,
+            text="Cerrar Sesión",
+            command=self.cerrar_sesion,
+            background="#FF4444",
+            foreground="white",
+            font=("Helvetica", 12)
+        )
+        self.boton_cerrar_sesion.pack(pady=20)
         self.cargar_tablas()
         
+        # Botón de cierre de sesión
+        
+        
+
     def cargar_tablas(self):
         # Clear existing items
         for item in self.tabla_docentes.get_children():
@@ -193,6 +282,10 @@ class InterfazBibliotecario:
             self.tabla_estudiantes.delete(item)
         for item in self.tabla_libros.get_children():
             self.tabla_libros.delete(item)
+        for item in self.tabla_prestamos_activos.get_children():
+            self.tabla_prestamos_activos.delete(item)
+        for item in self.tabla_historial.get_children():
+            self.tabla_historial.delete(item)
             
         docentes = self.biblioteca_facade.obtener_docentes()
         for docente in docentes:
@@ -231,6 +324,43 @@ class InterfazBibliotecario:
                 libro.obtener_ano_publicacion(),
                 libro.obtener_categoria()
             ))
+            
+        # Cargar préstamos activos
+        prestamos_activos = self.biblioteca_facade.obtener_prestamos_activos()
+        for prestamo in prestamos_activos:
+            self.tabla_prestamos_activos.insert("", "end", values=(
+                prestamo.obtener_id(),
+                prestamo.obtener_usuario().obtener_nombre(),
+                prestamo.obtener_usuario().obtener_id(),
+                prestamo.obtener_usuario().obtener_tipo_usuario(),
+                prestamo.obtener_libro().obtener_titulo(),
+                prestamo.obtener_fecha_prestamo(),
+                prestamo.obtener_fecha_devolucion(),
+                prestamo.obtener_fecha_reasignada()
+            ))
+            
+        # Cargar historial de préstamos
+        historial_prestamos = self.biblioteca_facade.obtener_historial_prestamos()
+        for prestamo in historial_prestamos:
+            self.tabla_historial.insert("", "end", values=(
+                prestamo.obtener_id(),
+                prestamo.obtener_usuario().obtener_nombre(),
+                prestamo.obtener_usuario().obtener_id(),
+                prestamo.obtener_tipo_usuario(),
+                prestamo.obtener_libro().obtener_titulo(),
+                prestamo.obtener_fecha_prestamo(),
+                prestamo.obtener_fecha_devolucion(),
+                prestamo.obtener_fecha_reasignada(),
+                prestamo.obtener_estado(),
+                prestamo.obtener_multa()
+            ))
+
+    def cerrar_sesion(self):
+        self.ventana.destroy()
+        ventana_login = tk.Tk()
+        from interfaz_login import LoginBiblioteca
+        LoginBiblioteca(ventana_login)
+        ventana_login.mainloop()
 
     def agregar_libro(self):
         # Crear ventana emergente para agregar libro

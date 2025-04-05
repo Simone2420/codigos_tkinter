@@ -6,7 +6,6 @@ class GestorPrestamos:
         self._prestamos = []
         self._historico_prestamos = []
     def agregar_prestamo(self,prestamo):
-        self._prestamos.append(prestamo)
         self._historico_prestamos.append(prestamo)
         self.base_datos_proxy.registrar_prestamo(prestamo)
     def actualizar_prestamo(self,prestamo):
