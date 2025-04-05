@@ -269,11 +269,6 @@ class InterfazBibliotecario:
         )
         self.boton_cerrar_sesion.pack(pady=20)
         self.cargar_tablas()
-        
-        # Botón de cierre de sesión
-        
-        
-
     def cargar_tablas(self):
         # Clear existing items
         for item in self.tabla_docentes.get_children():
@@ -354,14 +349,12 @@ class InterfazBibliotecario:
                 prestamo.obtener_estado(),
                 prestamo.obtener_multa()
             ))
-
     def cerrar_sesion(self):
         self.ventana.destroy()
         ventana_login = tk.Tk()
         from interfaz_login import LoginBiblioteca
         LoginBiblioteca(ventana_login)
         ventana_login.mainloop()
-
     def agregar_libro(self):
         # Crear ventana emergente para agregar libro
         ventana_libro = tk.Toplevel(self.ventana)
@@ -534,8 +527,3 @@ class InterfazBibliotecario:
             except Exception as e:
                 messagebox.showerror("Error", str(e))
         
-class InterfazUsuario:
-    def __init__(self,ventana,usuario):
-        super().__init__(ventana)
-        self.ventana.title("Ventana del usuario")
-        self.usuario = usuario

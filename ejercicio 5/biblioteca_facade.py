@@ -2,10 +2,10 @@ from modelos import *
 from controladores import *
 class BibliotecaFacade:
     def __init__(self):
-        self.base_datos_proxy = BaseDatosProxy()
-        self._gestor_usuarios = GestorUsuarios(self.base_datos_proxy)
-        self._gestor_prestamos = GestorPrestamos(self.base_datos_proxy)
-        self._gestor_libros = GestorLibros(self.base_datos_proxy)
+        self.__base_datos_proxy = BaseDatosProxy()
+        self._gestor_usuarios = GestorUsuarios(self.__base_datos_proxy)
+        self._gestor_prestamos = GestorPrestamos(self.__base_datos_proxy)
+        self._gestor_libros = GestorLibros(self.__base_datos_proxy)
     def logear_usuario(self,tipo_usuario,
     nombre_usuario,id_matricula_usuario,identificacion_usuario):
         empleado = EmpleadoBiblioteca("Blass",
@@ -84,6 +84,10 @@ class BibliotecaFacade:
         return self._gestor_usuarios.obtener_estudiantes()
     def obtener_libros(self):
         return self._gestor_libros.obtener_libros()
+    def obtener_prestamos_activos(self):
+        return self._gestor_prestamos.listar_prestamos_activos_detallado()
+    def obtener_prestamos_historico(self):
+        return self._gestor_prestamos.listar_historico_prestamos_detallado()
     def registrar_docente(self,nombre,
     identificacion,
     id_matricula,
@@ -114,7 +118,7 @@ class BibliotecaFacade:
         libro_temporal = Libro(titulo_libro,
         nombre_autor,ano_publicacion,categoria)
         self._gestor_libros.registrar_libro(libro_temporal)
-    def hacer_prestamo_libro(self,usuario): pass
+    def hacer_prestamo_libro(self,usuario,libro): pass
     def extender_prestamo_libro(self,usuario): pass
     def devolver_prestamo_libro(self,usuario): pass
     def cobrar_multa_usuario(self,usuario): pass

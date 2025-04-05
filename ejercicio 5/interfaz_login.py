@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from biblioteca_facade import *
 from interfaz_biblioteca_facade import *
+from interfaz_usuario import *
 from modelos import excepciones,EmpleadoBiblioteca
 class LoginBiblioteca:
     def __init__(self, ventana):
@@ -164,8 +165,8 @@ class LoginBiblioteca:
             messagebox.showerror("Error en ingreso del id o matriculo del usuario",e)
         except ValueError:
             messagebox.showerror("Identificación invalida","El numero de la identificación debe ser numerico")
-        # except Exception as e:
-        #     messagebox.showerror("Error inesperado",e)
+        except Exception as e:
+            messagebox.showerror("Error inesperado",e)
     def cerrar_aplicacion(self, ventana_secundaria):
         ventana_secundaria.destroy()
         self.ventana.destroy()
