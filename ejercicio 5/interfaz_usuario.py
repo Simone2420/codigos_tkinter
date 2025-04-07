@@ -162,6 +162,9 @@ class InterfazUsuario:
         if self.usuario.obtener_tipo() == "estudiante" and self.usuario.obtener_limite_prestamos() <= 0:
             messagebox.showwarning("Limite de prestamos", "No puedes tener mas de 2 prestamos activos.")
             return
+        if self.usuario.obtener_tiene_multa() == True:
+            messagebox.showwarning("Multa", "No puedes puedes pedir prestado libros mientras tengas una multa.")
+            return
         id_libro = self.tabla_libros_disponibles.item(seleccion[0], "values")[0]
         libro_obtenido = self.biblioteca_facade.buscar_libro_por_id(int(id_libro))
         self.biblioteca_facade.hacer_prestamo_libro(self.usuario,libro_obtenido)
@@ -190,7 +193,12 @@ class InterfazUsuario:
             return
         id_libro = self.tabla_libros_prestados.item(seleccion[0], "values")[0]
         prestamo_obtenido = self.biblioteca_facade.buscar_prestamo_por_id_libro(int(id_libro))
-        self.biblioteca_facade.devolver_prestamo_libro(self.usuario,prestamo_obtenido,self.dias_trasncurridos)
+        self.usuario,libro_obtenido = self.biblioteca_facade.devolver_prestamo_libro(self.usuario,prestamo_obtenido,self.dias_trasncurridos)
+        if self.usuario.obtener_tipo() == "docente":
+            self.biblioteca_facade.actualizar_datos_docente(self.usuario)
+        elif self.usuario.obtener_tipo() == "estudiante":
+            self.biblioteca_facade.actualizar_datos_estudiante(self.usuario)
+        self.biblioteca_facade.actualizar_datos_libro(libro_obtenido)
         self.actualizar_informacion()
         self.actualizar_tablas()
     def pagar_multa(self):
@@ -200,7 +208,7 @@ class InterfazUsuario:
             return
         id_prestamo = self.tabla_multas.item(seleccion[0], "values")[0]
         prestamo_encontrado = self.biblioteca_facade.buscar_prestamo_por_id(int(id_prestamo))
-        self.biblioteca_facade.pagar_multa(self.usuario, prestamo_encontrado)
+        self.biblioteca_facade.pagar_multa(prestamo_encontrado,self.usuario)
         self.actualizar_informacion()
         self.actualizar_tablas()
     def actualizar_informacion(self):

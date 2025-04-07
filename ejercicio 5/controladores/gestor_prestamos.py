@@ -12,11 +12,14 @@ class GestorPrestamos:
     def filtrar_prestamos_por_usuario(self,usuario):
         prestamos_asociados_al_usuario = [
             prestamo for prestamo in self._prestamos 
-            if prestamo.obtener_usuario().obtener_id() == usuario.obtener_id() and prestamo.obtener_usuario().obtener_identificacion() == usuario.obtener_identificacion()
+            if prestamo.obtener_usuario().obtener_id() == usuario.obtener_id() and 
+            prestamo.obtener_usuario().obtener_identificacion() == usuario.obtener_identificacion()
+            and prestamo.obtener_tiene_multa() == False and prestamo.obtener_fecha_devolucion_real() == None
         ]
         return prestamos_asociados_al_usuario
     def filtrar_prestamos_por_usuario_con_multa(self,usuario):
-        prestamos_asociados_al_usuario = [prestamo for prestamo in self._prestamos if prestamo.obtener_usuario() == usuario and prestamo.obtener_tiene_multa() == True]
+        prestamos_asociados_al_usuario = [prestamo for prestamo in self._prestamos 
+            if prestamo.obtener_usuario().obtener_id() == usuario.obtener_id() and prestamo.obtener_usuario().obtener_identificacion() == usuario.obtener_identificacion() and prestamo.obtener_tiene_multa() == True]
         return prestamos_asociados_al_usuario
     def filtrar_libro_prestamos_por_usuario_sin_multa(self,usuario):
         prestamos_asociados_al_usuario = [prestamo for prestamo in self._prestamos if prestamo.obtener_usuario() == usuario and prestamo.obtener_tiene_multa() == False]

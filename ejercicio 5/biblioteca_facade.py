@@ -160,20 +160,21 @@ class BibliotecaFacade:
             if prestamo.obtener_libro().obtener_titulo() == nombre_libro:
                 return prestamo
     def extender_prestamo_libro(self,prestamo,dias_transcurridos,usuario_interfaz):
+        prestamo.establecer_usuario(usuario_interfaz)
         prestamo.extender_prestamo(dias_transcurridos)
+        self._gestor_prestamos.actualizar_prestamo(prestamo)
         usuario = prestamo.obtener_usuario()
         usuario_interfaz = usuario
         libro_actulizado = prestamo.obtener_libro()
         return (usuario_interfaz,libro_actulizado)
         
     def devolver_prestamo_libro(self,usuario,prestamo,dias_transcurridos):
+        prestamo.establecer_usuario(usuario)
         prestamo.devolver_libro(dias_transcurridos)
         self._gestor_prestamos.actualizar_prestamo(prestamo)
-        self._gestor_libros.actualizar_datos_libro(prestamo.obtener_libro())
-        if usuario.obtener_tipo() == "estudiante":
-            self.actualizar_datos_estudiante(usuario)
-        elif usuario.obtener_tipo() == "docente":
-            self.actualizar_datos_docente(usuario)
+        usuario = prestamo.obtener_usuario()
+        libro = prestamo.obtener_libro()
+        return (usuario,libro)
     def buscar_prestamo_por_id(self,id_prestamo):
         prestamos = self._gestor_prestamos.listar_prestamos_activos_detallado()
         for prestamo in prestamos:
@@ -185,9 +186,34 @@ class BibliotecaFacade:
             if prestamo.obtener_libro().obtener_id() == id_libro:
                 return prestamo
     def obtener_restamos_con_multas_pendientes(self,usuario):
-        prestamos_filtrados = self._gestor_prestamos.filtrar_prestamos_por_usuario(usuario)
-        return [prestamo_con_multa for prestamo_con_multa in prestamos_filtrados if prestamo_con_multa.obtener_tiene_multa() != 0 or prestamo_con_multa.obtener_tiene_multa()!= False]
+        prestamos_filtrados = self._gestor_prestamos.filtrar_prestamos_por_usuario_con_multa(usuario)
+        return prestamos_filtrados
+    def pagar_multa(self,prestamo,usuario):
+        prestamo.establecer_usuario(usuario)
+        if isinstance(usuario,Estudiante):
+            prestamo.hacer_horas_sociales_estudiante()
+        elif isinstance(usuario,Docente):
+            prestamo.pagar_multa_docente()
+        usuario = prestamo.obtener_usuario()
+        if isinstance(usuario,Estudiante):
+            self.actualizar_datos_estudiante(usuario)
+        elif isinstance(usuario,Docente):
+            self.actualizar_datos_docente(usuario)
+        self._gestor_prestamos.actualizar_prestamo(prestamo)
+        verificador = self.verificar_multas_pendientes(usuario)
+        if verificador == False:
+            usuario.establecer_tiene_multa(False)
+            if isinstance(usuario,Estudiante):
+                self.actualizar_datos_estudiante(usuario)
+            elif isinstance(usuario,Docente):
+                self.actualizar_datos_docente(usuario)
     def mostrar_libros_mas_solicitados(self): pass
+    def verificar_multas_pendientes(self,usuario):
+        prestamos_pendientes = self._gestor_prestamos.filtrar_prestamos_por_usuario_con_multa(usuario)
+        if len(prestamos_pendientes) == 0:
+            return False
+        else:
+            return True
     def mostrar_prestamos_activos(self): pass
     def mostrar_historico_prestamo(self): pass
     

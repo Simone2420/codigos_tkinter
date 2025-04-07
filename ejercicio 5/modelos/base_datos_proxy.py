@@ -55,7 +55,8 @@ class BaseDatosProxy:
                 else:
                     usuario_objeto = self.buscar_estudiante_por_id(int(id_usuario))
                 libro_objeto = self.buscar_libro_por_titulo(titulo_libro)
-                usuario_objeto.agregar_libro(libro_objeto)
+                if tiene_multa == 0 or fecha_devolucion == None or fecha_devolucion_reagsignada == "":
+                    usuario_objeto.agregar_libro(libro_objeto)
                 prestamo_objeto = Prestamo(usuario_objeto,libro_objeto,id=int(id))
                 prestamo_objeto.establecer_fecha_prestamo(fecha_prestamo)
                 prestamo_objeto.establecer_fecha_devolucion_esperada(fecha_devolucion_esperada)
@@ -65,15 +66,13 @@ class BaseDatosProxy:
                 prestamo_objeto.establecer_valor_a_pagar_multa(valor_a_pagar_multa)
                 if tiene_multa == 0:
                     prestamo_objeto.establecer_tiene_multa(False)
+                    prestamo_objeto.obtener_libro().establecer_estado(False)
                 else:
                     prestamo_objeto.establecer_tiene_multa(True)
-                prestamo_objeto.obtener_libro().establecer_estado(False)
+                    prestamo_objeto.obtener_libro().establecer_estado(True)
+                
                 self._prestamos.append(prestamo_objeto)
-                self.actualizar_datos_libro(libro_objeto)
-                if tipo_usuario.lower() == "docente":
-                    self.actualizar_datos_docente(usuario_objeto)
-                else:
-                    self.actualizar_datos_estudiante(usuario_objeto)
+                
     def crear_ultimo_docente_registrado(self):
         datos_ultimo_docente_registrado = self.conexion.obtener_ultimo_docente_registrado()
         if datos_ultimo_docente_registrado:
@@ -277,8 +276,14 @@ class BaseDatosProxy:
         for libro in self._libros:
             if libro.obtener_titulo() == titulo_libro:
                 return libro
+    def eliminar_prestamo(self,prestamo): 
+        self.conexion.eliminar_prestamo_por_id(prestamo.obtener_id())
     def obtener_docentes(self):
         return self._docentes
+    def buscar_prestamo_por_id(self,id_prestamo):
+        for prestamo in self._prestamos:
+            if prestamo.obtener_id() == id_prestamo:
+                return prestamo
     def obtener_estudiantes(self):
         return self._estudiantes
     def obtener_libros(self):

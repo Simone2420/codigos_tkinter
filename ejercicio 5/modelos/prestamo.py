@@ -35,6 +35,10 @@ class Prestamo:
         return self._usuario
     def obtener_libro(self):
         return self._libro
+    def establecer_usuario(self, nuevo_usuario):
+        self._usuario = nuevo_usuario
+    def establecer_libro(self, nuevo_libro):
+        self._libro = nuevo_libro
     def obtener_fecha_prestamo(self):
         if isinstance(self._fecha_prestamo,datetime) or self._fecha_prestamo == None:
             return self._fecha_prestamo
@@ -43,8 +47,10 @@ class Prestamo:
     def obtener_fecha_devolucion_real(self):
         if isinstance(self._fecha_devolucion,datetime) or self._fecha_devolucion == None:
             return self._fecha_devolucion
-        else:
+        elif isinstance(self._fecha_devolucion,str):
             return datetime.strptime(self._fecha_devolucion, '%Y-%m-%d %H:%M:%S.%f')
+        else:
+            return None
     def obtener_valor_multa(self):
         return self._valor_multa
     def obtener_fecha_devolucion_esperada(self):
@@ -146,7 +152,9 @@ class Prestamo:
                     self._usuario.establecer_tiene_multa(True)
                     self.establecer_tiene_multa(True)
                     print(f"El usuario {self._usuario} ha devuelto el libro.")
-                return "El usuario devolvio su libro exitosamente"
+                else:
+                    self.establecer_fecha_devolucion(self.obtener_fecha_devolucion_real())
+                    print(f"El usuario {self._usuario} ha devuelto el libro.")
             else:
                 raise NoHayLibroParaDevolver("El usuario no tiene libros para devolver")
         except NoHayLibroParaDevolver as e:
@@ -184,8 +192,12 @@ class Prestamo:
             return f"El docente {self._usuario} ha pagado exitosamente su multa"
     def hacer_horas_sociales_estudiante(self):
         if isinstance(self._usuario,Estudiante):
-            self._usuario.agregar_horas_sociales_asignadas(-1*self._valor_a_pagar_multa)
-            return f"El estudiante {self._usuario} ha cumplido exitosamente con sus horas sociales asignada para este prestamo"
+            if self._usuario.obtener_horas_sociales_asignadas() <= 0:
+                self._usuario.establecer_horas_sociales_asignadas(0)
+            else:
+                self._usuario.agregar_horas_sociales_asignadas(-1*self._valor_a_pagar_multa)
+            self._tiene_multa = False
+            
     # Método para mostrar información del préstamo
     def mostrar_informacion(self):
         print(f"Usuario: {self._usuario.obtener_nombre()} de tipo {self._usuario.obtener_tipo()}")

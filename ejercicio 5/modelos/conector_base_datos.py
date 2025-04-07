@@ -195,38 +195,13 @@ class ConectorBasedeDatos:
     def cerrar_conexion(self):
         if self.conexion:
             self.conexion.close()
-if __name__ == "__main__":
-    conexion = ConectorBasedeDatos()
-    if conexion.error:
-        print("Ocurrió un error:", conexion.error)
-    else:
-        conexion.registrar_datos_docente("Fabricio", 1000, "P12345", 5000, "8:00 AM - 5:00 PM", "Teaching and research", 5)
-        conexion.registrar_datos_docente("Maurico", 20, "P67890", 200, "9:00 AM - 6:00 PM", "Assisting students", 3)
-        conexion.registrar_datos_estudiante("Juan", 123456, "M12345", 10, 2)
-        conexion.registrar_datos_libro("Python for Dummies", "John Doe", 2022, "Programming", 1, 0)
-        conexion.registrar_datos_prestamo("Juan", 123456, "M12345", "Estudiante", "Python for Dummies", "2022-05-01", "2022-05-15", None, None, 0, 0, 0)
-        conexion = ConectorBasedeDatos()
-
-
-        docentes = conexion.obtener_datos_docentes()
-        estudiantes = conexion.obtener_datos_estudiantes()
-        libros = conexion.obtener_datos_libros()
-        prestamos = conexion.obtener_datos_prestamos()
-
-        print("Docentes:")
-        for docente in docentes:
-            print(docente)
-
-        print("Estudiantes:")
-        for estudiante in estudiantes:
-            print(estudiante)
-
-        print("Libros:")
-        for libro in libros:
-            print(libro)
-
-        print("Préstamos:")
-        for prestamo in prestamos:
-            print(prestamo)
-
-        conexion.cerrar_conexion()
+    def eliminar_prestamo_por_id(self, id_prestamo):
+        """Elimina un registro de préstamo de la base de datos por su ID."""
+        try:
+            self.cursor.execute('''
+                DELETE FROM prestamos WHERE id=?
+            ''', (id_prestamo,))
+            self.conexion.commit()
+            print(f"Préstamo con ID {id_prestamo} eliminado exitosamente.")
+        except Exception as e:
+            print(f"Error al eliminar el préstamo: {e}")
