@@ -1,3 +1,4 @@
+from pickle import FALSE
 from modelos import *
 from controladores import *
 class BibliotecaFacade:
@@ -123,6 +124,10 @@ class BibliotecaFacade:
     def hacer_prestamo_libro(self,usuario,libro):
         prestamo_temporal = Prestamo(usuario,libro)
         prestamo_temporal.prestar_libro()
+        usuario_prestamo = prestamo_temporal.obtener_usuario()
+        libro_prestamo = prestamo_temporal.obtener_libro()
+        usuario = usuario_prestamo
+        libro = libro_prestamo
         if usuario.obtener_tipo() == "estudiante":
             self.actualizar_datos_estudiante(usuario)
         elif usuario.obtener_tipo() == "docente":
@@ -154,33 +159,34 @@ class BibliotecaFacade:
         for prestamo in prestamos:
             if prestamo.obtener_libro().obtener_titulo() == nombre_libro:
                 return prestamo
-    def extender_prestamo_libro(self,usuario,prestamo):
-        validador = prestamo.extender_prestamo()
-        if validador != False:           
-            self._gestor_prestamos.actualizar_prestamo(prestamo)
-            self._gestor_libros.actualizar_datos_libro(prestamo.obtener_libro())
-            if usuario.obtener_tipo() == "estudiante":
-                self.actualizar_datos_estudiante(usuario)
-            elif usuario.obtener_tipo() == "docente":
-                self.actualizar_datos_docente(usuario)
+    def extender_prestamo_libro(self,prestamo,dias_transcurridos,usuario_interfaz):
+        prestamo.extender_prestamo(dias_transcurridos)
+        usuario = prestamo.obtener_usuario()
+        usuario_interfaz = usuario
+        libro_actulizado = prestamo.obtener_libro()
+        return (usuario_interfaz,libro_actulizado)
         
-        
-    def devolver_prestamo_libro(self,usuario,prestamo):
-        validador = prestamo.devolver_libro()
-        if validador!= False:
-            self._gestor_prestamos.actualizar_prestamo(prestamo)
-            self._gestor_libros.actualizar_datos_libro(prestamo.obtener_libro())
-            if usuario.obtener_tipo() == "estudiante":
-                self.actualizar_datos_estudiante(usuario)
-            elif usuario.obtener_tipo() == "docente":
-                self.actualizar_datos_docente(usuario)
+    def devolver_prestamo_libro(self,usuario,prestamo,dias_transcurridos):
+        prestamo.devolver_libro(dias_transcurridos)
+        self._gestor_prestamos.actualizar_prestamo(prestamo)
+        self._gestor_libros.actualizar_datos_libro(prestamo.obtener_libro())
+        if usuario.obtener_tipo() == "estudiante":
+            self.actualizar_datos_estudiante(usuario)
+        elif usuario.obtener_tipo() == "docente":
+            self.actualizar_datos_docente(usuario)
     def buscar_prestamo_por_id(self,id_prestamo):
-        prestamos = self._gestor_prestamos.obtener_prestamos()
+        prestamos = self._gestor_prestamos.listar_prestamos_activos_detallado()
         for prestamo in prestamos:
             if prestamo.obtener_id() == id_prestamo:
                 return prestamo
-    def cobrar_multa_usuario(self,usuario): pass
-    def mostrar_libros(self,categoria): pass
+    def buscar_prestamo_por_id_libro(self,id_libro):
+        prestamos = self._gestor_prestamos.listar_prestamos_activos_detallado()
+        for prestamo in prestamos:
+            if prestamo.obtener_libro().obtener_id() == id_libro:
+                return prestamo
+    def obtener_restamos_con_multas_pendientes(self,usuario):
+        prestamos_filtrados = self._gestor_prestamos.filtrar_prestamos_por_usuario(usuario)
+        return [prestamo_con_multa for prestamo_con_multa in prestamos_filtrados if prestamo_con_multa.obtener_tiene_multa() != 0 or prestamo_con_multa.obtener_tiene_multa()!= False]
     def mostrar_libros_mas_solicitados(self): pass
     def mostrar_prestamos_activos(self): pass
     def mostrar_historico_prestamo(self): pass

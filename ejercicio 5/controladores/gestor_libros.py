@@ -19,9 +19,7 @@ class GestorLibros:
     def mostrar_todos_los_libros(self):
         return self._libros
     def mostrar_libros_disponibles(self):
-        libros_filtrados = [libro for libro in self._libros_disponibles if libro.obtener_esta_disponible() == True]
-        if libros_filtrados == []:
-            return False
+        libros_filtrados = [libro for libro in self._libros_disponibles if libro.obtener_esta_disponible() == True or libro.obtener_esta_disponible() == 1]
         return libros_filtrados
     def mostrar_libros_por_categoria(self,categoria_elegida):
         libros_filtrados = [libro for libro in self._libros if libro.obtener_categoria() == categoria_elegida]

@@ -8,11 +8,11 @@ class GestorPrestamos:
     def agregar_prestamo(self,prestamo):
         self.base_datos_proxy.registrar_prestamo(prestamo)
     def actualizar_prestamo(self,prestamo):
-        self.base_datos_proxy.actualizar_prestamo(prestamo)
+        self.base_datos_proxy.actualizar_datos_prestamo(prestamo)
     def filtrar_prestamos_por_usuario(self,usuario):
         prestamos_asociados_al_usuario = [
             prestamo for prestamo in self._prestamos 
-            if prestamo.obtener_usuario().obtener_id() == usuario.obtener_id()
+            if prestamo.obtener_usuario().obtener_id() == usuario.obtener_id() and prestamo.obtener_usuario().obtener_identificacion() == usuario.obtener_identificacion()
         ]
         return prestamos_asociados_al_usuario
     def filtrar_prestamos_por_usuario_con_multa(self,usuario):

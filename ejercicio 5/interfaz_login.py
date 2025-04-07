@@ -163,8 +163,8 @@ class LoginBiblioteca:
             messagebox.showerror("Error en ingreso del nombre del usuario",e)
         except Id_MatriculaVacio as e:
             messagebox.showerror("Error en ingreso del id o matriculo del usuario",e)
-        except ValueError:
-            messagebox.showerror("Identificación invalida","El numero de la identificación debe ser numerico")
+        # except ValueError:
+        #     messagebox.showerror("Identificación invalida","El numero de la identificación debe ser numerico")
         # except Exception as e:
         #     messagebox.showerror("Error inesperado",e)
     def cerrar_aplicacion(self, ventana_secundaria):

@@ -148,16 +148,16 @@ class ConectorBasedeDatos:
             ''', (nombre_docente, identificacion, id_profesional, salario, horario, funciones, limite_prestamos, tiene_multa,id_docente))
             self.conexion.commit()
         except Exception as e:
-            print(f"Error al actualizar datos: {e}")
+            print(f"Error al actualizar datos: {e} d")
 
     def actualizar_datos_estudiante(self, id_estudiante, nombre, identificacion, numero_matricula, horas_sociales_asignadas, limite_prestamos,tiene_multa):
         try:
             self.cursor.execute('''
                 UPDATE estudiantes SET nombre=?, identificacion=?, numero_matricula=?, horas_sociales_asignadas=?, limite_prestamos=?,tiene_multa=? WHERE id=?
-            ''', (nombre, identificacion, numero_matricula, horas_sociales_asignadas, limite_prestamos, id_estudiante))
+            ''', (nombre, identificacion, numero_matricula, horas_sociales_asignadas, limite_prestamos,tiene_multa, id_estudiante))
             self.conexion.commit()
         except Exception as e:
-            print(f"Error al actualizar datos: {e}")
+            print(f"Error al actualizar datos: {e} e")
 
     def actualizar_datos_libro(self, id_libro, titulo, autor, ano_publicacion, categoria, disponible, numero_veces_solicitado):
         try:
@@ -166,7 +166,7 @@ class ConectorBasedeDatos:
             ''', (titulo, autor, ano_publicacion, categoria, disponible, numero_veces_solicitado, id_libro))
             self.conexion.commit()
         except Exception as e:
-            print(f"Error al actualizar datos: {e}")
+            print(f"Error al actualizar datos: {e} l")
 
     def actualizar_datos_prestamo(self, id_prestamo, nombre_usuario, identificacion_usuario, id_usuario, tipo_usuario, titulo_libro, fecha_prestamo, fecha_devolucion_esperada, fecha_devolucion_real, fecha_reasignacion, valor_multa, valor_a_pagar_multa, tiene_multa):
         try:
@@ -175,7 +175,7 @@ class ConectorBasedeDatos:
             ''', (nombre_usuario, identificacion_usuario, id_usuario, tipo_usuario, titulo_libro, fecha_prestamo, fecha_devolucion_esperada, fecha_devolucion_real, fecha_reasignacion, valor_multa, valor_a_pagar_multa, tiene_multa, id_prestamo))
             self.conexion.commit()
         except Exception as e:
-            print(f"Error al actualizar datos: {e}")
+            print(f"Error al actualizar datos: {e} p")
     def obtener_ultimo_docente_registrado(self):
         self.cursor.execute("SELECT * FROM docentes ORDER BY id DESC LIMIT 1")
         return self.cursor.fetchone()

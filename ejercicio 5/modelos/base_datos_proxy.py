@@ -16,24 +16,33 @@ class BaseDatosProxy:
     def crear_docentes(self):
         docentes = self.conexion.obtener_datos_docentes()
         for docente in docentes:
-            id,nombre,identificacion,id_profesional,salario,horario,funciones,limite_libros_prestados,_=docente
+            id,nombre,identificacion,id_profesional,salario,horario,funciones,limite_libros_prestados,tiene_multa=docente
             docente_objeto = Docente(nombre,identificacion,salario,horario,funciones,id_profesional,limite_prestamos=limite_libros_prestados,id=id)
-            docente_objeto.establecer_tiene_multa(False)
+            if tiene_multa == 0:
+                docente_objeto.establecer_tiene_multa(False)
+            else:
+                docente_objeto.establecer_tiene_multa(True)
             self._docentes.append(docente_objeto)
     def crear_estudiantes(self): 
         estudiantes = self.conexion.obtener_datos_estudiantes()
         for estudiante in estudiantes:
-            id,nombre,identificacion,numero_matricula,numero_horas_sociales_asignadas,limite_libros_prestados,_=estudiante
+            id,nombre,identificacion,numero_matricula,numero_horas_sociales_asignadas,limite_libros_prestados,tiene_multa=estudiante
             estudiante_objeto = Estudiante(nombre,identificacion,numero_matricula,limite_prestamos=limite_libros_prestados,id=id)
-            estudiante_objeto.establecer_tiene_multa(False)
+            if tiene_multa == 0:
+                estudiante_objeto.establecer_tiene_multa(False)
+            else:
+                estudiante_objeto.establecer_tiene_multa(True)
             estudiante_objeto.establecer_horas_sociales_asignadas(numero_horas_sociales_asignadas)
             self._estudiantes.append(estudiante_objeto)
     def crear_libros(self):
         libros = self.conexion.obtener_datos_libros()
         for libro in libros:
-            id,titulo,autor,ano_publicacion,categoria,_,numero_veces_solicitado=libro
+            id,titulo,autor,ano_publicacion,categoria,disponible,numero_veces_solicitado=libro
             libro_objeto = Libro(titulo,autor,ano_publicacion,categoria,id=id)
-            libro_objeto.establecer_estado(True)
+            if disponible == 0:
+                libro_objeto.establecer_estado(False)
+            else:
+                libro_objeto.establecer_estado(True)
             libro_objeto.establecer_numero_veces_solicitado(numero_veces_solicitado)
             self._libros.append(libro_objeto)
     def obtener_prestamos_base_datos(self):
@@ -46,6 +55,7 @@ class BaseDatosProxy:
                 else:
                     usuario_objeto = self.buscar_estudiante_por_id(int(id_usuario))
                 libro_objeto = self.buscar_libro_por_titulo(titulo_libro)
+                usuario_objeto.agregar_libro(libro_objeto)
                 prestamo_objeto = Prestamo(usuario_objeto,libro_objeto,id=int(id))
                 prestamo_objeto.establecer_fecha_prestamo(fecha_prestamo)
                 prestamo_objeto.establecer_fecha_devolucion_esperada(fecha_devolucion_esperada)
@@ -53,11 +63,17 @@ class BaseDatosProxy:
                 prestamo_objeto.establecer_fecha_reagsignacion(fecha_devolucion_reagsignada)
                 prestamo_objeto.establecer_valor_multa(valor_multa)
                 prestamo_objeto.establecer_valor_a_pagar_multa(valor_a_pagar_multa)
-                prestamo_objeto.establecer_tiene_multa(tiene_multa)
+                if tiene_multa == 0:
+                    prestamo_objeto.establecer_tiene_multa(False)
+                else:
+                    prestamo_objeto.establecer_tiene_multa(True)
                 prestamo_objeto.obtener_libro().establecer_estado(False)
                 self._prestamos.append(prestamo_objeto)
                 self.actualizar_datos_libro(libro_objeto)
-                self.actualizar_datos_docente(usuario_objeto)
+                if tipo_usuario.lower() == "docente":
+                    self.actualizar_datos_docente(usuario_objeto)
+                else:
+                    self.actualizar_datos_estudiante(usuario_objeto)
     def crear_ultimo_docente_registrado(self):
         datos_ultimo_docente_registrado = self.conexion.obtener_ultimo_docente_registrado()
         if datos_ultimo_docente_registrado:
@@ -85,17 +101,20 @@ class BaseDatosProxy:
         datos_ultimo_prestamo_registrado = self.conexion.obtener_ultimo_prestamo_registrado()
         if datos_ultimo_prestamo_registrado:
             id,_,_,id_usuario,tipo_usuario,titulo_libro,fecha_prestamo,fecha_devolucion_esperada,fecha_devolucion,fecha_devolucion_reagsignada,valor_multa,valor_a_pagar_multa,tiene_multa = datos_ultimo_prestamo_registrado
-            if tipo_usuario == "Docente":
-                usuario_objeto = self.buscar_docente_por_id(id_usuario)
+            if tipo_usuario == "docente":
+                usuario_objeto = self.buscar_docente_por_id(int(id_usuario))
             else:
-                usuario_objeto = self.buscar_estudiante_por_id(id_usuario)
+                usuario_objeto = self.buscar_estudiante_por_id(int(id_usuario))
             libro_objeto = self.buscar_libro_por_titulo(titulo_libro)
             prestamo_objeto = Prestamo(usuario_objeto,libro_objeto,id=id)
             prestamo_objeto.establecer_fecha_prestamo(fecha_prestamo)
             prestamo_objeto.establecer_fecha_devolucion_esperada(fecha_devolucion_esperada)
             prestamo_objeto.establecer_fecha_devolucion(fecha_devolucion)
             prestamo_objeto.establecer_fecha_reagsignacion(fecha_devolucion_reagsignada)
-            prestamo_objeto.establecer_valor_multa(valor_multa)
+            if tiene_multa == 0:
+                prestamo_objeto.establecer_tiene_multa(False)
+            else:
+                prestamo_objeto.establecer_tiene_multa(True)
             prestamo_objeto.establecer_valor_a_pagar_multa(valor_a_pagar_multa)
             prestamo_objeto.establecer_tiene_multa(tiene_multa)
             self._prestamos.append(prestamo_objeto)

@@ -36,13 +36,7 @@ class UsuarioBase(Persona, ABC):
     def agregar_libro(self,libro):
         self._libros_prestados.append(libro)
     def quitar_libro(self, libro):
-        try:
-            indice = self._libros_prestados.index(libro)
-            libro_eliminado = self._libros_prestados.pop(indice)
-            return libro_eliminado
-        except ValueError:
-            print("El libro no está en la lista de libros prestados.")
-            return None
+        self._libros_prestados.remove(libro)
     @abstractmethod
     def mostrar_informacion(self):
         pass
@@ -90,6 +84,7 @@ Número de Matrícula: {self.obtener_numero_matricula()}
 Horas Sociales Asignadas: {self.obtener_horas_sociales_asignadas()}
 Límite de Préstamos: {self.obtener_limite_prestamos()}
 Libros Prestados: {len(self.obtener_libros_prestados())}
+Libros Prestados: {self.obtener_libros_prestados()}
 Estado: {"Con multa" if self.obtener_tiene_multa() else "Sin multa"}"""
     def validar_datos(self):
         try:
@@ -145,7 +140,8 @@ ID Profesional: {self.obtener_id_profesional()}
 Salario Actual: ${self.obtener_salario():,.2f}
 Salario Base: ${self.obtener_salario_constante():,.2f}
 Horario: {self.obtener_horario()}
-Funciones: {self.obtener_funciones()}"""
+Funciones: {self.obtener_funciones()}
+"""
 class Docente(UsuarioBase, EmpleadoBiblioteca):
     id_profesional = "P#####"
     def __init__(self, nombre, identificacion, salario, horario, funciones, id_profesional,limite_prestamos=3,id=0):
@@ -183,6 +179,7 @@ Horario: {self.obtener_horario()}
 Funciones: {self.obtener_funciones()}
 Límite de Préstamos: {self.obtener_limite_prestamos()}
 Libros Prestados: {len(self.obtener_libros_prestados())}
+Libros Prestados: {self.obtener_libros_prestados()}
 Estado: {"Con multa" if self.obtener_tiene_multa() else "Sin multa"}"""
     def validar_datos(self):
         try:

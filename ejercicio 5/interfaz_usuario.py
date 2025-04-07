@@ -18,15 +18,17 @@ class InterfazUsuario:
         self.seccion_informacion.grid(row=0, column=0, sticky="nsew")
         self.seccion_principal = tk.Frame(self.divisor_principal, background="#EDEAE0")
         self.seccion_principal.grid(row=1, column=0, sticky="nsew")
+        self.dias_trasncurridos = 0
         self.interfaz_grafica()
-        # Add this line to bind space key
-        self.ventana.bind('<space>', lambda event: self.aumentar_fechas_eventos())
-
+        
     # Modify the method to handle the event
-    def aumentar_fechas_eventos(self):
-        # Add your logic here
-        print("Space pressed - Updating dates")  # For testing
-        # Call any methods you need to update dates
+    def aumentar_dias(self):
+        self.dias_trasncurridos += 1
+        print("Space pressed - Updating dates")
+        self.actualizar_informacion()
+    def resetear_dias(self):
+        self.dias_trasncurridos = 0
+        self.actualizar_informacion()
     def interfaz_grafica(self):
         tk.Label(
             self.seccion_informacion,
@@ -47,6 +49,12 @@ class InterfazUsuario:
             background="#EDEAE0"
         )
         self.informacion.pack()
+        self.informacion_dias_trasncurridos = tk.Label(
+            self.seccion_informacion,
+            text=f"Dias transcurridos: {self.dias_trasncurridos}",
+            font=("Helvetica", 9) 
+        )
+        self.informacion_dias_trasncurridos.pack()
         self.seccion_libros_para_prestamo = tk.Frame(self.seccion_principal, background="#EDEAE0")
         self.seccion_libros_para_prestamo.grid(row=0, column=0, sticky="nsew")
         #agregar tabla de libros para prestamo con filtro de libros disponibles
@@ -104,13 +112,51 @@ class InterfazUsuario:
             command=self.devolver_prestamo
         )
         self.boton_devolver_prestamo.pack()
+        
+        self.seccion_multas = tk.Frame(self.divisor_secundario, background="#EDEAE0")
+        self.seccion_multas.grid(row=0, column=0, padx=10, pady=5, sticky="nsew")
+        
+        tk.Label(
+            self.seccion_multas,
+            text="Multas Pendientes",
+            font=("Helvetica", 16),
+            background="#EDEAE0"
+        ).pack(pady=5)
+        
+        self.tabla_multas = ttk.Treeview(
+            self.seccion_multas,
+            columns=("ID", "Nombre Usuario", "Valor Multa"),
+            show="headings",
+            height=5
+        )
+        
+        self.tabla_multas.heading("ID", text="ID")
+        self.tabla_multas.column("ID", width=50)
+        self.tabla_multas.heading("Nombre Usuario", text="Nombre Usuario")
+        self.tabla_multas.column("Nombre Usuario", width=150)
+        self.tabla_multas.heading("Valor Multa", text="Valor Multa")
+        self.tabla_multas.column("Valor Multa", width=100)
+        
+        self.tabla_multas.pack(fill="both", expand=True, padx=5, pady=5)
+        
+        self.boton_pagar_multa = tk.Button(
+            self.seccion_multas,
+            text="Pagar Multa",
+            command=self.pagar_multa,
+            background="#4CAF50",
+            foreground="white"
+        )
+        self.boton_pagar_multa.pack(pady=10)
+        self.ventana.bind('<space>', lambda event: self.aumentar_dias())
+        self.ventana.bind('<r>', lambda event: self.resetear_dias())    
         self.actualizar_tablas()
+        self.actualizar_informacion()
     def hacer_prestamo(self):
         seleccion = self.tabla_libros_disponibles.selection()
         if not seleccion:
             messagebox.showwarning("Selección vacía", "Selecciona un producto para eliminar.")
             return
-        if self.usuario.obtener_tipo() >= "docente" and self.usuario.obtener_limite_prestamos() <= 0:
+        if self.usuario.obtener_tipo() == "docente" and self.usuario.obtener_limite_prestamos() <= 0:
             messagebox.showwarning("Limite de prestamos", "No puedes tener mas de 3 prestamos activos.")
             return
         if self.usuario.obtener_tipo() == "estudiante" and self.usuario.obtener_limite_prestamos() <= 0:
@@ -126,9 +172,15 @@ class InterfazUsuario:
         if not seleccion:
             messagebox.showwarning("Selección vacía", "Selecciona un producto para eliminar.")
             return
-        id_prestamo = self.tabla_libros_prestados.item(seleccion[0], "values")[0]
-        prestamo_obtenido = self.biblioteca_facade.buscar_prestamo_por_id(int(id_prestamo))
-        self.biblioteca_facade.extender_prestamo(self.usuario,prestamo_obtenido)
+        id_libro = self.tabla_libros_prestados.item(seleccion[0], "values")[0]
+        prestamo_obtenido = self.biblioteca_facade.buscar_prestamo_por_id_libro(int(id_libro))
+        libro_obtenido = self.biblioteca_facade.buscar_libro_por_id(int(id_libro))
+        self.usuario,libro_obtenido = self.biblioteca_facade.extender_prestamo_libro(prestamo_obtenido,self.dias_trasncurridos,self.usuario)
+        if self.usuario.obtener_tipo() == "docente":
+            self.biblioteca_facade.actualizar_datos_docente(self.usuario)
+        elif self.usuario.obtener_tipo() == "estudiante":
+            self.biblioteca_facade.actualizar_datos_estudiante(self.usuario)
+        self.biblioteca_facade.actualizar_datos_libro(libro_obtenido)
         self.actualizar_informacion()
         self.actualizar_tablas()
     def devolver_prestamo(self):
@@ -136,20 +188,32 @@ class InterfazUsuario:
         if not seleccion:
             messagebox.showwarning("Selección vacía", "Selecciona un producto para eliminar.")
             return
-        id_prestamo = self.tabla_libros_prestados.item(seleccion[0], "values")[0]
-        prestamo_obtenido = self.biblioteca_facade.buscar_prestamo_por_id(int(id_prestamo))
-        self.biblioteca_facade.devolver_prestamo(self.usuario,prestamo_obtenido)
+        id_libro = self.tabla_libros_prestados.item(seleccion[0], "values")[0]
+        prestamo_obtenido = self.biblioteca_facade.buscar_prestamo_por_id_libro(int(id_libro))
+        self.biblioteca_facade.devolver_prestamo_libro(self.usuario,prestamo_obtenido,self.dias_trasncurridos)
+        self.actualizar_informacion()
+        self.actualizar_tablas()
+    def pagar_multa(self):
+        seleccion = self.tabla_multas.selection()
+        if not seleccion:
+            messagebox.showwarning("Selección vacía", "Selecciona una multa para pagar.")
+            return
+        id_prestamo = self.tabla_multas.item(seleccion[0], "values")[0]
+        prestamo_encontrado = self.biblioteca_facade.buscar_prestamo_por_id(int(id_prestamo))
+        self.biblioteca_facade.pagar_multa(self.usuario, prestamo_encontrado)
         self.actualizar_informacion()
         self.actualizar_tablas()
     def actualizar_informacion(self):
         self.informacion.config(text=self.biblioteca_facade.obtener_informacion_usuario(self.usuario))
+        self.informacion_dias_trasncurridos.config(text=f"Dias transcurridos: {self.dias_trasncurridos}")
     def actualizar_tablas(self):
         for item in self.tabla_libros_disponibles.get_children():
             self.tabla_libros_disponibles.delete(item)
         for item in self.tabla_libros_prestados.get_children():
             self.tabla_libros_prestados.delete(item)
+        for item in self.tabla_multas.get_children():
+            self.tabla_multas.delete(item)
         
-            
         libros_disponibles = self.biblioteca_facade.obtener_libros_disponibles()
         for libro in libros_disponibles:
             self.tabla_libros_disponibles.insert("", "end", values=(
@@ -169,6 +233,14 @@ class InterfazUsuario:
                 prestamo.obtener_libro().obtener_categoria(),
                 prestamo.obtener_fecha_prestamo(),
                 prestamo.obtener_fecha_devolucion_esperada(),
-                prestamo.obtener_fecha_reasignacion()   
+                prestamo.obtener_fecha_reasignacion()
+            ))
+        
+        prestamos_con_multas_pendientes = self.biblioteca_facade.obtener_restamos_con_multas_pendientes(self.usuario)
+        for multa in prestamos_con_multas_pendientes:
+            self.tabla_multas.insert("", "end", values=(
+                multa.obtener_id(),
+                multa.obtener_usuario().obtener_nombre(),
+                multa.obtener_valor_a_pagar_multa()
             ))
         
