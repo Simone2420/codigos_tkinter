@@ -18,31 +18,77 @@ class InterfazInventario:
         self.productos_almacenados = []
         self.interfaz_grafica()
     def interfaz_grafica(self):
-        tk.Label(self.divisor_principal,text="Nombre producto").grid(row=0,column=0)
-        self.nombre_producto = tk.Entry(self.divisor_principal)
-        self.nombre_producto.grid(row=0,column=1)
-        tk.Label(self.divisor_principal,text="Precio").grid(row=1,column=0)
-        self.precio_producto = tk.Entry(self.divisor_principal)
-        self.precio_producto.grid(row=1,column=1)
-        tk.Label(self.divisor_principal,text="Cantidad").grid(row=2,column=0)
-        self.cantidad_producto = tk.Entry(self.divisor_principal)
-        self.cantidad_producto.grid(row=2,column=1)
-        self.boton_agregar = tk.Button(self.divisor_principal,text="Agregar producto",command=self.agregar_producto)
-        self.boton_agregar.grid(row=3,column=1,columnspan=3)
-        self.boton_eliminar = tk.Button(self.divisor_principal,text="Eliminar producto",command=self.eliminar_producto,state="disabled")
-        self.boton_eliminar.grid(row=4,column=1,columnspan=3)
-        self.boton_editar = tk.Button(self.divisor_principal,text="Editar producto",command=self.editar_producto,state="disabled")
-        self.boton_editar.grid(row=5,column=0)
-        self.boton_guardar_edicion = tk.Button(self.divisor_principal,text="Guardar edición del producto",command=self.guardar_edicion_producto,state="disabled")
-        self.boton_guardar_edicion.grid(row=5,column=1)
-        self.boton_guardar = tk.Button(self.divisor_principal,text="Guardar",command=self.guardar_producto,state="disabled")
-        self.boton_guardar.grid(row=6,column=0)
-        self.boton_cargar = tk.Button(self.divisor_principal,text="Cargar",command=self.cargar_producto)
-        self.boton_cargar.grid(row=6,column=1)
-        self.tabla_productos = ttk.Treeview(self.divisor_secundario,columns=("Indice","Nombre", "Precio", "Cantidad", "Total"), show="headings")
-        for col in ("Indice","Nombre", "Precio", "Cantidad", "Total"):
+        # Frame contenedor para los campos de entrada
+        frame_entradas = tk.Frame(self.divisor_principal, bg="#EDEAE0", padx=20, pady=10)
+        frame_entradas.grid(row=0, column=0, sticky="nsew")
+
+        # Estilo para las etiquetas
+        estilo_label = {"bg": "#EDEAE0", "font": ("Arial", 11), "pady": 5}
+
+        # Campos de entrada con etiquetas
+        tk.Label(frame_entradas, text="Nombre producto", **estilo_label).grid(row=0, column=0, padx=10, pady=5)
+        self.nombre_producto = tk.Entry(frame_entradas, font=("Arial", 10), width=25)
+        self.nombre_producto.grid(row=0, column=1, padx=10, pady=5)
+
+        tk.Label(frame_entradas, text="Precio", **estilo_label).grid(row=1, column=0, padx=10, pady=5)
+        self.precio_producto = tk.Entry(frame_entradas, font=("Arial", 10), width=25)
+        self.precio_producto.grid(row=1, column=1, padx=10, pady=5)
+
+        tk.Label(frame_entradas, text="Cantidad", **estilo_label).grid(row=2, column=0, padx=10, pady=5)
+        self.cantidad_producto = tk.Entry(frame_entradas, font=("Arial", 10), width=25)
+        self.cantidad_producto.grid(row=2, column=1, padx=10, pady=5)
+
+        # Frame para los botones
+        frame_botones = tk.Frame(self.divisor_principal, bg="#EDEAE0", padx=20, pady=10)
+        frame_botones.grid(row=1, column=0, sticky="nsew")
+
+        # Estilo común para los botones
+        estilo_boton = {
+            "font": ("Arial", 10),
+            "borderwidth": 0,
+            "relief": "flat",
+            "padx": 15,
+            "pady": 8,
+            "cursor": "hand2"
+        }
+
+        # Botones principales
+        self.boton_agregar = tk.Button(frame_botones, text="Agregar producto", command=self.agregar_producto,
+                                    bg="#4CAF50", fg="white", **estilo_boton)
+        self.boton_agregar.grid(row=0, column=0, padx=5, pady=5)
+
+        self.boton_eliminar = tk.Button(frame_botones, text="Eliminar producto", command=self.eliminar_producto,
+                                      bg="#f44336", fg="white", state="disabled", **estilo_boton)
+        self.boton_eliminar.grid(row=0, column=1, padx=5, pady=5)
+
+        self.boton_editar = tk.Button(frame_botones, text="Editar producto", command=self.editar_producto,
+                                    bg="#2196F3", fg="white", state="disabled", **estilo_boton)
+        self.boton_editar.grid(row=1, column=0, padx=5, pady=5)
+
+        self.boton_guardar_edicion = tk.Button(frame_botones, text="Guardar edición", command=self.guardar_edicion_producto,
+                                              bg="#4CAF50", fg="white", state="disabled", **estilo_boton)
+        self.boton_guardar_edicion.grid(row=1, column=1, padx=5, pady=5)
+
+        self.boton_guardar = tk.Button(frame_botones, text="Guardar", command=self.guardar_producto,
+                                      bg="#9C27B0", fg="white", state="disabled", **estilo_boton)
+        self.boton_guardar.grid(row=2, column=0, padx=5, pady=5)
+
+        self.boton_cargar = tk.Button(frame_botones, text="Cargar", command=self.cargar_producto,
+                                     bg="#FF9800", fg="white", **estilo_boton)
+        self.boton_cargar.grid(row=2, column=1, padx=5, pady=5)
+
+        # Tabla de productos
+        self.tabla_productos = ttk.Treeview(self.divisor_secundario,
+                                          columns=("Indice", "Nombre", "Precio", "Cantidad", "Total"),
+                                          show="headings",
+                                          height=10)
+
+        # Configuración de las columnas de la tabla
+        for col in ("Indice", "Nombre", "Precio", "Cantidad", "Total"):
             self.tabla_productos.heading(col, text=col)
-        self.tabla_productos.pack()
+            self.tabla_productos.column(col, width=100)
+
+        self.tabla_productos.pack(padx=20, pady=20, fill="both", expand=True)
     def agregar_producto(self):
         try:
             nombre_producto = self.nombre_producto.get().strip()
