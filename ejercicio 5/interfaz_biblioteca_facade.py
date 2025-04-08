@@ -288,11 +288,11 @@ class InterfazBibliotecario:
                 prestamo.obtener_id(),
                 prestamo.obtener_usuario().obtener_nombre(),
                 prestamo.obtener_usuario().obtener_id(),
-                prestamo.obtener_usuario().obtener_tipo_usuario(),
+                prestamo.obtener_usuario().obtener_tipo(),
                 prestamo.obtener_libro().obtener_titulo(),
                 prestamo.obtener_fecha_prestamo(),
-                prestamo.obtener_fecha_devolucion(),
-                prestamo.obtener_fecha_reasignada()
+                prestamo.obtener_fecha_devolucion_esperada(),
+                prestamo.obtener_fecha_devolucion_real()
             ))
     def cerrar_sesion(self):
         self.ventana.destroy()

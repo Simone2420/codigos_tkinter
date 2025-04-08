@@ -147,6 +147,15 @@ class InterfazUsuario:
             foreground="white"
         )
         self.boton_pagar_multa.pack(pady=10)
+        self.boton_cerrar_sesion = tk.Button(
+            self.seccion_multas,
+            text="Cerrar Sesión",
+            command=self.cerrar_sesion,
+            background="#FF4444",
+            foreground="white",
+            font=("Helvetica", 12)
+        )
+        self.boton_cerrar_sesion.pack(pady=20)
         self.ventana.bind('<space>', lambda event: self.aumentar_dias())
         self.ventana.bind('<r>', lambda event: self.resetear_dias())    
         self.actualizar_tablas()
@@ -251,4 +260,9 @@ class InterfazUsuario:
                 multa.obtener_usuario().obtener_nombre(),
                 multa.obtener_valor_a_pagar_multa()
             ))
-        
+    def cerrar_sesion(self):
+        self.ventana.destroy()
+        ventana_login = tk.Tk()
+        from interfaz_login import LoginBiblioteca
+        LoginBiblioteca(ventana_login)
+        ventana_login.mainloop()
